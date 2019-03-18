@@ -8,16 +8,22 @@
 import Foundation
 import UIKit
 
-public class LSystemView: UIView {
+public class LSystemView: UIView, UIGestureRecognizerDelegate {
     static let step = CGFloat(10)
     var paths : [CGPath]?
     var config: LSystemConfiguration
     var mainLayer = CAShapeLayer()
+    var isInitialDraw: Bool = true
     
-    public init(frame: CGRect, config: LSystemConfiguration) {
+    public init(frame: CGRect, config: LSystemConfiguration, userInteractionEnabled: Bool) {
         self.config = config
         super.init(frame: frame)
         generatePaths()
+        self.isUserInteractionEnabled = userInteractionEnabled
+        let zoomRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(zoom(gestureRecognizer:)))
+        addGestureRecognizer(zoomRecognizer)
+        let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(pan(gestureRecognizer:)))
+        addGestureRecognizer(panRecognizer)
     }
      
     required init?(coder aDecoder: NSCoder) {
@@ -26,18 +32,24 @@ public class LSystemView: UIView {
     
     public override func draw(_ rect: CGRect) {
         if let paths = paths {
-            mainLayer.path = paths.last!
-            mainLayer.strokeColor = UIColor.green.cgColor
-            let animation = CAKeyframeAnimation(keyPath: "path")
-            
-            animation.values = paths
-            animation.duration = Double(paths.count)
-            
-            //animation.fillMode = CAMediaTimingFillMode.forwards
-            animation.isRemovedOnCompletion = false
-            
-            mainLayer.add(animation, forKey: "drawLineAnimation")
-            layer.addSublayer(mainLayer)
+            if isInitialDraw {
+                isInitialDraw = false
+                mainLayer.path = paths.last!
+                mainLayer.strokeColor = UIColor.green.cgColor
+                let animation = CAKeyframeAnimation(keyPath: "path")
+                
+                animation.values = paths
+                animation.duration = Double(paths.count)
+                
+                //animation.fillMode = CAMediaTimingFillMode.forwards
+                animation.isRemovedOnCompletion = false
+                
+                mainLayer.add(animation, forKey: "drawLineAnimation")
+                layer.addSublayer(mainLayer)
+            } else {
+                //TODO: is this required?
+                //mainLayer.transform = mainLayer.trans
+            }
         }
     }
     
@@ -74,6 +86,15 @@ public class LSystemView: UIView {
             paths!.append(newPath.cgPath)
         }
         setNeedsDisplay()
+    }
+    
+    @objc func zoom(gestureRecognizer: UIPinchGestureRecognizer) {
+        //mainLayer.setAffineTransform(mainLayer.affineTransform().scaledBy(x: scale, y: scale))
+    }
+    
+    @objc func pan(gestureRecognizer: UIPanGestureRecognizer) {
+        let translation = gestureRecognizer.translation(in: self)
+        mainLayer.setAffineTransform(CGAffineTransform(translationX: translation.x, y: translation.y))
     }
 }
 

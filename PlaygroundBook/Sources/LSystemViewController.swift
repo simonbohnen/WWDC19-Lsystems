@@ -11,7 +11,7 @@ import UIKit
 public class LSystemViewController: UIViewController {
     var lsystemView : LSystemView?
     var config: LSystemConfiguration
-    public var userInteractionEnabled: Bool
+    var userInteractionEnabled: Bool
     
     /// Minimum scale to which the user may ‘pinch to zoom’
     private let maxScaleLimit: CGFloat = 4
@@ -21,22 +21,22 @@ public class LSystemViewController: UIViewController {
     private var spiralViewCumulativeScale: CGFloat = 1.0
     
     public init(config: LSystemConfiguration, userInteractionEnabled: Bool) {
-         self.userInteractionEnabled = userInteractionEnabled
+        self.userInteractionEnabled = userInteractionEnabled
         self.config = config
-         super.init(nibName: nil, bundle: nil)
+        super.init(nibName: nil, bundle: nil)
     }
-     
+    
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        lsystemView = LSystemView(frame: CGRect(x: 0, y: 0, width: view.frame.width / 2, height: view.frame.height), config: config)
+        lsystemView = LSystemView(frame: view.frame, config: config, userInteractionEnabled: userInteractionEnabled)
         view.addSubview(lsystemView!)
         view.backgroundColor = UIColor.black
         
-        if userInteractionEnabled {
+        /*if userInteractionEnabled {
             let pinchGesture = UIPinchGestureRecognizer(target: self,
                                                         action: #selector(zoom(gestureRecognizer:)))
             view.addGestureRecognizer(pinchGesture)
@@ -44,7 +44,7 @@ public class LSystemViewController: UIViewController {
             let panGesture = UIPanGestureRecognizer(target: self,
                                                     action: #selector(pan(gestureRecognizer:)))
             view.addGestureRecognizer(panGesture)
-        }
+        }*/
     }
     
     //var lastPoint: CGPoint?
