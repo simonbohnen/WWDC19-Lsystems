@@ -10,6 +10,7 @@ import UIKit
 
 public class LSystemViewController: UIViewController {
     var lsystemView : LSystemView?
+    var config: LSystemConfiguration
     public var userInteractionEnabled: Bool
     
     /// Minimum scale to which the user may ‘pinch to zoom’
@@ -21,8 +22,8 @@ public class LSystemViewController: UIViewController {
     
     public init(config: LSystemConfiguration, userInteractionEnabled: Bool) {
          self.userInteractionEnabled = userInteractionEnabled
+        self.config = config
          super.init(nibName: nil, bundle: nil)
-         self.lsystemView = LSystemView(frame: CGRect(x: 0, y: 0, width: view.frame.width / 2, height: view.frame.height), config: config)
     }
      
     required init?(coder aDecoder: NSCoder) {
@@ -31,6 +32,7 @@ public class LSystemViewController: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
+        lsystemView = LSystemView(frame: CGRect(x: 0, y: 0, width: view.frame.width / 2, height: view.frame.height), config: config)
         view.addSubview(lsystemView!)
         view.backgroundColor = UIColor.black
         
@@ -95,6 +97,5 @@ public class LSystemViewController: UIViewController {
                                      y: lsystemView.center.y + translation.y)
         
         gestureRecognizer.setTranslation(CGPoint(x: 0, y: 0), in: view)
-        
     }
 }

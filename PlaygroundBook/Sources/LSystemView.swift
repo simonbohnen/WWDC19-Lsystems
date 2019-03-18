@@ -62,7 +62,7 @@ public class LSystemView: UIView {
                 case .rotateLeft:
                     direction = direction.applying(CGAffineTransform(rotationAngle: config.angle))
                 case .rotateRight:
-                    direction = direction.applying(CGAffineTransform(rotationAngle: config.angle))
+                    direction = direction.applying(CGAffineTransform(rotationAngle: -config.angle))
                 case .push:
                     break
                 case .pop:
