@@ -13,11 +13,14 @@ public enum DrawMode {
 }
 
 public class LSystemView: UIView, UIGestureRecognizerDelegate {
-    static let step = CGFloat(10)
     var paths: [CGPath]?
+    //The sequences this LSystemView will display. These are generated using increasingly many interations.
     var sequences: [[Action]]?
+    //The configuration describing the rules, axioms etc.
     var config: LSystemConfiguration
+    //The main layer displaying the path(s)
     var mainLayer = CAShapeLayer()
+    
     var strokeEndValues: [CGFloat]?
     var transforms: [CATransform3D]?
     var startingPoint: CGPoint?
@@ -28,25 +31,36 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
     public init(frame: CGRect, config: LSystemConfiguration) {
         self.config = config
         super.init(frame: frame)
-        startingPoint = CGPoint(x: bounds.midX, y: bounds.midY)
+        generateSequences()
         generatePaths()
         if config.drawMode == .turtle {
             generateTurtleKeyTimes()
         }
-        setNeedsDisplay()
+        //setNeedsDisplay()
     }
      
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var isInitialDraw: Bool = true
+    
     public override func draw(_ rect: CGRect) {
-        //backgroundColor = UIColor.black
+        /*if isInitialDraw {
+            isInitialDraw = false
+            return
+        }*/
+        let borderLayer = CAShapeLayer()
+        let borderPath = UIBezierPath(rect: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))
+        borderLayer.path = borderPath.cgPath
+        borderLayer.strokeColor = UIColor.black.cgColor
+        borderLayer.fillColor = nil
+        layer.addSublayer(borderLayer)
+        
         if let paths = paths {
-            scalePaths()
             mainLayer.path = paths.last!
             mainLayer.strokeColor = config.strokeColor
-            mainLayer.lineWidth = 0.5
+            mainLayer.lineWidth = 1
             mainLayer.fillColor = nil
             switch(config.drawMode) {
             case .morph:
@@ -60,6 +74,25 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
                 
                 mainLayer.add(animation, forKey: "drawPathAnimation")
                 layer.addSublayer(mainLayer)
+                
+                // 1
+                let textLayer = CATextLayer()
+                textLayer.frame = self.bounds
+                
+                // 2
+                let string = String(Double(frame.width)) + " " + String(Double(frame.height)) + "\n"
+                
+                textLayer.string = string
+                
+                // 3
+                textLayer.font = CTFontCreateWithName("Helvetica" as CFString, 20, nil)
+                
+                // 4
+                textLayer.foregroundColor = UIColor.darkGray.cgColor
+                textLayer.isWrapped = true
+                textLayer.alignmentMode = CATextLayerAlignmentMode.left
+                textLayer.contentsScale = UIScreen.main.scale
+                layer.addSublayer(textLayer)
             case .draw:
                 let animation = CABasicAnimation(keyPath: "strokeEnd")
                 animation.fromValue = 0.0
@@ -103,74 +136,8 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
                 mainLayer.add(drawingAnimation, forKey: "drawingAnimation")
                 layer.addSublayer(mainLayer)
                 layer.insertSublayer(turtleLayer, above: mainLayer)
-                
-                // 1
-                let textLayer = CATextLayer()
-                textLayer.frame = self.bounds
-                
-                // 2
-                let string = String(CATransform3DEqualToTransform(transforms!.first!, newTurtleTransforms.first!)) + " " + String(sequences!.last!.count)
-                
-                textLayer.string = string
-                
-                // 3
-                textLayer.font = CTFontCreateWithName("Helvetica" as CFString, 20, nil)
-                
-                // 4
-                textLayer.foregroundColor = UIColor.darkGray.cgColor
-                textLayer.isWrapped = true
-                textLayer.alignmentMode = CATextLayerAlignmentMode.left
-                textLayer.contentsScale = UIScreen.main.scale
-                layer.addSublayer(textLayer)
             }
         }
-    }
-    
-    func scalePaths() {
-        var scaledPaths: [CGPath] = []
-        for path in paths! {
-            var transform = scalePath(path: path)
-            scaledPaths.append(path.copy(using: &transform)!)
-        }
-        paths = scaledPaths
-    }
-    
-    func scalePath(path: CGPath) -> CGAffineTransform {
-        // I'm assuming that the view and original shape layer is already created
-        let boundingBox = path.boundingBoxOfPath
-        
-        let boundingBoxAspectRatio = boundingBox.width / boundingBox.height
-        let viewAspectRatio = self.frame.width / self.frame.height
-        
-        var scaleFactor: CGFloat = 1.0;
-        if boundingBoxAspectRatio > viewAspectRatio {
-            // Width is limiting factor
-            scaleFactor = self.frame.width / boundingBox.width
-        } else {
-            // Height is limiting factor
-            scaleFactor = self.frame.height / boundingBox.height
-        }
-        
-        // Scaling the path ...
-        var scaleTransform = CGAffineTransform.identity
-        // Scale down the path first
-        scaleTransform = scaleTransform.scaledBy(x: scaleFactor, y: scaleFactor)
-        // Then translate the path to the upper left corner
-        scaleTransform = scaleTransform.translatedBy(x: -boundingBox.minX, y: -boundingBox.minY);
-        
-        // If you want to be fancy you could also center the path in the view
-        // i.e. if you don't want it to stick to the top.
-        // It is done by calculating the heigth and width difference and translating
-        // half the scaled value of that in both x and y (the scaled side will be 0)
-        let scaledSize = boundingBox.size.applying(CGAffineTransform(scaleX: scaleFactor, y: scaleFactor))
-        let centerOffset = CGSize(width:  (frame.width - scaledSize.width) / (scaleFactor * 2.0),
-                                  height: (frame.height - scaledSize.height) / (scaleFactor * 2.0))
-        scaleTransform = scaleTransform.translatedBy(x: centerOffset.width, y: centerOffset.height)
-        // End of "center in view" transformation code
-        if path == paths?.last! {
-            lastTransform = scaleTransform
-        }
-        return scaleTransform
     }
     
     func strideArray(total: Int) -> [CGFloat] {
@@ -182,69 +149,23 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
     }
     
     func generatePaths() {
-        //Generating the sequences for any number of iterations to allow morphing
-        var sequences: [[Action]] = []
-        for i in 1...config.iterations {
-            let finishedSequence = replace(iterations: i, axiom: config.axiom, rules: config.rules)
-            sequences.append(stringToSequence(string: finishedSequence, actionMap: config.actionMap))
-        }
-        
-        self.sequences = sequences
         paths = []
-        for sequence in sequences {
-            transforms = []
-            let newPath = UIBezierPath()
-            var point = CGPoint(x: startingPoint!.x, y: startingPoint!.y)
-            newPath.move(to: point)
-            var direction = CGPoint(x: 0, y: -1)
-            var cumulatedAngle: CGFloat = 0
-            var posStack: [(CGPoint, CGPoint)] = []
-            
-            for action in sequence {
-                switch action {
-                case .forward:
-                    point.move(x: LSystemView.step * direction.x, y: LSystemView.step * direction.y)
-                    newPath.addLine(to: point)
-                case .rotateLeft:
-                    direction = direction.applying(CGAffineTransform(rotationAngle: config.angle))
-                    cumulatedAngle += config.angle
-                case .rotateRight:
-                    direction = direction.applying(CGAffineTransform(rotationAngle: -config.angle))
-                    cumulatedAngle -= config.angle
-                case .push:
-                    posStack.append((point, direction))
-                    break
-                case .pop:
-                    let popped = posStack.popLast()! //TODO: Was machen wenns keine mehr gibt?
-                    point = popped.0
-                    newPath.move(to: popped.0)
-                    direction = popped.1
-                    break
-                case .sneakForward:
-                    break
-                }
-                if cumulatedAngle >= 2 * .pi {
-                    cumulatedAngle -= 2 * .pi
-                }
-                if config.drawMode == .turtle {
-                    var transform = CATransform3DMakeTranslation(point.x, point.y, 0)
-                    transform = CATransform3DRotate(transform, cumulatedAngle, 0, 0, 1)
-                    transforms?.append(transform)
-                }
+        for sequence in sequences! {
+            let startAndBox = getBoxAndStartPoint(sequence: sequence, config: config)
+            let width = startAndBox.2
+            let height = startAndBox.3
+            var step: CGFloat = 10
+            if width > height {
+                step = frame.width / width
+            } else {
+                step = frame.height / height
             }
-            
-            paths!.append(newPath.cgPath)
-        }
-        
-        forwardCount = 0
-        for action in sequences.last! {
-            if action == .forward {
-                forwardCount! += 1
-            }
+            let start = CGPoint(x: startAndBox.0 * step, y: startAndBox.1 * step) //CGPoint(x: 200, y: 200)
+            paths?.append(getPath(sequence: sequence, startingPoint: start, config: config, step: step))
         }
     }
     
-    func getAngle(vector: CGPoint) -> CGFloat {
+    /*func getAngle(vector: CGPoint) -> CGFloat {
         if vector.x == 0 {
             if vector.y > 0 {
                 return .pi
@@ -260,7 +181,7 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
             }
         }
         return atan2(vector.y, vector.x)
-    }
+    }*/
     
     func generateTurtleKeyTimes() {
         var time: Int = 0
@@ -276,11 +197,15 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
             turtleKeyTimes!.append(NSNumber(value: Double(val) / Double(keyTimesInt.last!)))
         }
     }
-}
-
-extension CGPoint {
-    mutating func move(x: CGFloat, y: CGFloat) {
-        self.x += x
-        self.y += y
+    
+    func generateSequences() {
+        //Generating the sequences for any number of iterations to allow morphing
+        var sequences: [[Action]] = []
+        for i in 1...config.iterations {
+            let finishedSequence = replace(iterations: i, axiom: config.axiom, rules: config.rules)
+            sequences.append(stringToSequence(string: finishedSequence, actionMap: config.actionMap))
+        }
+        
+        self.sequences = sequences
     }
 }

@@ -13,7 +13,7 @@ let axiom = "F"
 let rules : [Character: String] = [
     "F": "FRFLFLFRF"
 ]
-let iterations = 2
+let iterations = 4
 let actionMap : [Character : Action] = [
     "F": Action.forward,
     "R": Action.rotateRight,
@@ -22,7 +22,7 @@ let actionMap : [Character : Action] = [
     "]": Action.pop
 ]
 
-let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor.green.cgColor, drawMode: .turtle)
+let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor.green.cgColor, drawMode: .morph)
 let lViewController = LSystemViewController(config: config, userInteractionEnabled: true)
 PlaygroundPage.current.liveView = lViewController
 

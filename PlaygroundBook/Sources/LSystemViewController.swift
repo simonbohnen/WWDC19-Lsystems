@@ -80,7 +80,7 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
     fileprivate func addAndConstrainImageView() {
         let lsystemView = LSystemView(frame: view.frame, config: config)
         view.addSubview(lsystemView)
-        view.backgroundColor = UIColor.black
+        //view.backgroundColor = UIColor.black
         
         lsystemView.translatesAutoresizingMaskIntoConstraints = false
         // Always reset the spiralScale when we reset the spiral
