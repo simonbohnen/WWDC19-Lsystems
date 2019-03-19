@@ -14,14 +14,16 @@ public class LSystemConfiguration {
     public var iterations: Int
     public var actionMap: [Character: Action]
     public var angle: CGFloat
-    public var strokeColor: UIColor
+    public var strokeColor: CGColor
+    public var drawMode: DrawMode
     
-    public init(axiom: String, rules: [Character: String], iterations: Int, actionMap: [Character: Action], angle: CGFloat, strokeColor: UIColor) {
+    public init(axiom: String, rules: [Character: String], iterations: Int, actionMap: [Character: Action], angle: CGFloat, strokeColor: CGColor, drawMode: DrawMode) {
         self.axiom = axiom
         self.rules = rules
         self.iterations = iterations
         self.actionMap = actionMap
         self.angle = angle
         self.strokeColor = strokeColor
+        self.drawMode = drawMode
     }
 }

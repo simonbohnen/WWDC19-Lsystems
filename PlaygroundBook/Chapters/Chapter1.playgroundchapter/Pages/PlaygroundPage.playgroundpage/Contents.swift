@@ -13,13 +13,35 @@ let axiom = "F"
 let rules : [Character: String] = [
     "F": "FRFLFLFRF"
 ]
-let iterations = 3
+let iterations = 2
 let actionMap : [Character : Action] = [
     "F": Action.forward,
     "R": Action.rotateRight,
-    "L": Action.rotateLeft
+    "L": Action.rotateLeft,
+    "[": Action.push,
+    "]": Action.pop
 ]
 
-let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor.green)
+let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor.green.cgColor, drawMode: .turtle)
 let lViewController = LSystemViewController(config: config, userInteractionEnabled: true)
 PlaygroundPage.current.liveView = lViewController
+
+/*let axiom = "F"
+let rules : [Character: String] = [
+    "F": "E[LF]RF",
+    "E": "EE"
+]
+let iterations = 2
+let actionMap : [Character : Action] = [
+    "F": Action.forward,
+    "E": Action.forward,
+    "R": Action.rotateRight,
+    "L": Action.rotateLeft,
+    "[": Action.push,
+    "]": Action.pop
+]
+
+let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 4), strokeColor: UIColor.green.cgColor, drawMode: .turtle)
+let lViewController = LSystemViewController(config: config, userInteractionEnabled: true)
+PlaygroundPage.current.liveView = lViewController
+*/

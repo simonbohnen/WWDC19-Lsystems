@@ -21,6 +21,7 @@
 		F44C030B223D3F56001A20C4 /* LSystemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C030A223D3F56001A20C4 /* LSystemView.swift */; };
 		F44C030D223D4E52001A20C4 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C030C223D4E52001A20C4 /* Utils.swift */; };
 		F45D8DA8223FA5E000DB12DB /* LSystemConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45D8DA7223FA5E000DB12DB /* LSystemConfiguration.swift */; };
+		F45D8DAA223FDDB700DB12DB /* ColorStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45D8DA9223FDDB700DB12DB /* ColorStackView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -113,6 +114,7 @@
 		F44C030A223D3F56001A20C4 /* LSystemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSystemView.swift; sourceTree = "<group>"; };
 		F44C030C223D4E52001A20C4 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		F45D8DA7223FA5E000DB12DB /* LSystemConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSystemConfiguration.swift; sourceTree = "<group>"; };
+		F45D8DA9223FDDB700DB12DB /* ColorStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorStackView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,6 +257,7 @@
 				F44C030A223D3F56001A20C4 /* LSystemView.swift */,
 				F44C030C223D4E52001A20C4 /* Utils.swift */,
 				F45D8DA7223FA5E000DB12DB /* LSystemConfiguration.swift */,
+				F45D8DA9223FDDB700DB12DB /* ColorStackView.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -418,6 +421,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F45D8DAA223FDDB700DB12DB /* ColorStackView.swift in Sources */,
 				F44C030D223D4E52001A20C4 /* Utils.swift in Sources */,
 				F44C030B223D3F56001A20C4 /* LSystemView.swift in Sources */,
 				F45D8DA8223FA5E000DB12DB /* LSystemConfiguration.swift in Sources */,

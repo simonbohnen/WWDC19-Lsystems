@@ -7,14 +7,15 @@
 
 import Foundation
 import UIKit
+import PlaygroundSupport
 
-public class LSystemViewController: UIViewController {
+public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeAreaContainer {
     var lsystemView : LSystemView?
     var config: LSystemConfiguration
     var userInteractionEnabled: Bool
     
     /// Minimum scale to which the user may ‘pinch to zoom’
-    private let maxScaleLimit: CGFloat = 4
+    private let maxScaleLimit: CGFloat = .greatestFiniteMagnitude
     /// Maximum scale to which the user may ‘pinch to zoom’
     private let minScaleLimit: CGFloat = 0.3
     /// Variable to track how far the spiralView has been cumulatively scaled
@@ -32,11 +33,10 @@ public class LSystemViewController: UIViewController {
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        lsystemView = LSystemView(frame: view.frame, config: config, userInteractionEnabled: userInteractionEnabled)
-        view.addSubview(lsystemView!)
-        view.backgroundColor = UIColor.black
         
-        /*if userInteractionEnabled {
+        addAndConstrainImageView()
+        
+        if userInteractionEnabled {
             let pinchGesture = UIPinchGestureRecognizer(target: self,
                                                         action: #selector(zoom(gestureRecognizer:)))
             view.addGestureRecognizer(pinchGesture)
@@ -44,10 +44,65 @@ public class LSystemViewController: UIViewController {
             let panGesture = UIPanGestureRecognizer(target: self,
                                                     action: #selector(pan(gestureRecognizer:)))
             view.addGestureRecognizer(panGesture)
-        }*/
+        }
     }
     
-    //var lastPoint: CGPoint?
+    private var oldBounds = CGRect()
+    private let padding: CGFloat = 20.0
+    
+    override public func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // If we need to update based on the layoutGuide changing.
+        if oldBounds != liveViewSafeAreaGuide.layoutFrame {
+            oldBounds = liveViewSafeAreaGuide.layoutFrame
+            
+            spiralViewCumulativeScale = 1.0
+            var scale: CGFloat = 1.0
+            
+            // Always match scale to the shorter “side” so it fits
+            if liveViewSafeAreaGuide.layoutFrame.width < liveViewSafeAreaGuide.layoutFrame.height {
+                scale = (liveViewSafeAreaGuide.layoutFrame.width - padding) / (lsystemView?.frame.width)!
+            } else {
+                scale = (liveViewSafeAreaGuide.layoutFrame.height - padding) / (lsystemView?.frame.height)!
+            }
+            
+            // Increment the scale
+            spiralViewCumulativeScale *= scale
+            
+            // Execute the transform
+            lsystemView?.transform = (lsystemView?.transform.scaledBy(x: scale,
+                                                                    y: scale))!;
+        }
+    }
+    
+    private let tempConstantForLayoutScaling: CGFloat = 700.0
+    
+    fileprivate func addAndConstrainImageView() {
+        let lsystemView = LSystemView(frame: view.frame, config: config)
+        view.addSubview(lsystemView)
+        view.backgroundColor = UIColor.black
+        
+        lsystemView.translatesAutoresizingMaskIntoConstraints = false
+        // Always reset the spiralScale when we reset the spiral
+        spiralViewCumulativeScale = 1.0
+        
+        // Constrain `spiralView` to a square whose size matches the shorter of width and height.
+        let widthConstraint: NSLayoutConstraint
+        let heightConstraint: NSLayoutConstraint
+        
+        // Set initial constraint values—from here we will only scale up or down
+        widthConstraint = lsystemView.widthAnchor.constraint(equalToConstant: tempConstantForLayoutScaling)
+        heightConstraint = lsystemView.heightAnchor.constraint(equalToConstant: tempConstantForLayoutScaling)
+        
+        let centerYConstraint = lsystemView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        let centerXConstraint = lsystemView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        NSLayoutConstraint.activate([widthConstraint,
+                                     heightConstraint,
+                                     centerYConstraint,
+                                     centerXConstraint])
+        self.lsystemView = lsystemView
+    }
+    
     //FIXME: fix zooming
     @objc func zoom(gestureRecognizer: UIPinchGestureRecognizer) {
         guard let lsystemView = lsystemView else { return }
