@@ -13,7 +13,7 @@ public enum DrawMode {
 }
 
 public class LSystemView: UIView, UIGestureRecognizerDelegate {
-    static let step = CGFloat(30)
+    static let step = CGFloat(10)
     var paths: [CGPath]?
     var sequences: [[Action]]?
     var config: LSystemConfiguration
@@ -74,7 +74,7 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
                 let drawingAnimation = CAKeyframeAnimation(keyPath: "strokeEnd")
                 drawingAnimation.values = strideArray(total: forwardCount!)
                 drawingAnimation.keyTimes = turtleKeyTimes
-                drawingAnimation.duration = 5
+                drawingAnimation.duration = Double(sequences!.last!.count) / 2.0
                 
                 //Describing the turtle as an arrow
                 let turtle = UIBezierPath()
@@ -90,19 +90,38 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
                 let turtleAnimaton = CAKeyframeAnimation(keyPath: "transform")
                 
                 var newTurtleTransforms: [CATransform3D] = []
+                let lastTransform3D = CATransform3DMakeAffineTransform(lastTransform!)
                 for transform in transforms! {
-                    newTurtleTransforms.append(CATransform3DConcat(transform, CATransform3DMakeAffineTransform(lastTransform!)))
+                    newTurtleTransforms.append(CATransform3DConcat(transform, lastTransform3D))
                 }
                 
                 turtleAnimaton.values = newTurtleTransforms
-                turtleAnimaton.duration = 5
+                turtleAnimaton.duration = Double(sequences!.last!.count) / 2.0
                 turtleAnimaton.isRemovedOnCompletion = false
                 
                 turtleLayer.add(turtleAnimaton, forKey: "turtleAnimation")
-                layer.addSublayer(turtleLayer)
                 mainLayer.add(drawingAnimation, forKey: "drawingAnimation")
-                layer.insertSublayer(mainLayer, below: turtleLayer)
-                break
+                layer.addSublayer(mainLayer)
+                layer.insertSublayer(turtleLayer, above: mainLayer)
+                
+                // 1
+                let textLayer = CATextLayer()
+                textLayer.frame = self.bounds
+                
+                // 2
+                let string = String(CATransform3DEqualToTransform(transforms!.first!, newTurtleTransforms.first!)) + " " + String(sequences!.last!.count)
+                
+                textLayer.string = string
+                
+                // 3
+                textLayer.font = CTFontCreateWithName("Helvetica" as CFString, 20, nil)
+                
+                // 4
+                textLayer.foregroundColor = UIColor.darkGray.cgColor
+                textLayer.isWrapped = true
+                textLayer.alignmentMode = CATextLayerAlignmentMode.left
+                textLayer.contentsScale = UIScreen.main.scale
+                layer.addSublayer(textLayer)
             }
         }
     }
