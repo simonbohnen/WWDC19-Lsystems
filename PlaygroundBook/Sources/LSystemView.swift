@@ -23,7 +23,7 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
     var startingPoint: CGPoint?
     var turtleKeyTimes: [NSNumber]?
     var forwardCount: Int?
-    var lastPathOriginal: CGPath?
+    var lastTransform: CGAffineTransform?
     
     public init(frame: CGRect, config: LSystemConfiguration) {
         self.config = config
@@ -43,7 +43,6 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
     public override func draw(_ rect: CGRect) {
         //backgroundColor = UIColor.black
         if let paths = paths {
-            lastPathOriginal = paths.last!
             scalePaths()
             mainLayer.path = paths.last!
             mainLayer.strokeColor = config.strokeColor
@@ -69,6 +68,7 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
                 mainLayer.add(animation, forKey: "drawPathAnimation")
                 layer.addSublayer(mainLayer)
             case .display:
+                //TODO: implement
                 break
             case .turtle:
                 let drawingAnimation = CAKeyframeAnimation(keyPath: "strokeEnd")
@@ -85,11 +85,16 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
                 turtle.addLine(to: CGPoint(x: 0, y: -3))
                 
                 let turtleLayer = CAShapeLayer()
-                var lastTransform = scalePath(path: lastPathOriginal!)
-                turtleLayer.path = turtle.cgPath.copy(using: &lastTransform)
+                turtleLayer.path = turtle.cgPath //.copy(using: &lastTransform!)
                 turtleLayer.fillColor = UIColor.red.cgColor
                 let turtleAnimaton = CAKeyframeAnimation(keyPath: "transform")
-                turtleAnimaton.values = transforms
+                
+                var newTurtleTransforms: [CATransform3D] = []
+                for transform in transforms! {
+                    newTurtleTransforms.append(CATransform3DConcat(transform, CATransform3DMakeAffineTransform(lastTransform!)))
+                }
+                
+                turtleAnimaton.values = newTurtleTransforms
                 turtleAnimaton.duration = 5
                 turtleAnimaton.isRemovedOnCompletion = false
                 
@@ -143,7 +148,9 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
                                   height: (frame.height - scaledSize.height) / (scaleFactor * 2.0))
         scaleTransform = scaleTransform.translatedBy(x: centerOffset.width, y: centerOffset.height)
         // End of "center in view" transformation code
-        
+        if path == paths?.last! {
+            lastTransform = scaleTransform
+        }
         return scaleTransform
     }
     
