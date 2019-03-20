@@ -34,7 +34,6 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor.black
         addAndConstrainImageView()
         
         if userInteractionEnabled {
