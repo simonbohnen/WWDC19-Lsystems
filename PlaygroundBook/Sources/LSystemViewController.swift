@@ -35,6 +35,7 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
         super.viewDidLoad()
         
         addAndConstrainImageView()
+        view.backgroundColor = UIColor.black
         
         if userInteractionEnabled {
             let pinchGesture = UIPinchGestureRecognizer(target: self,
@@ -102,28 +103,29 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
         self.lsystemView = lsystemView
     }
     
+    var lastPoint: CGPoint?
+    
     //FIXME: fix zooming
     @objc func zoom(gestureRecognizer: UIPinchGestureRecognizer) {
         guard let lsystemView = lsystemView else { return }
-        /*if gestureRecognizer.state == .began {
-         lastPoint = gestureRecognizer.location(in: lsystemView)
-         }*/
+        if gestureRecognizer.state == .began {
+            lastPoint = gestureRecognizer.location(in: view)
+        }
         
         if gestureRecognizer.state == .changed || gestureRecognizer.state == .ended {
             
             // Ensure the cumulative scale is within the set range
             if spiralViewCumulativeScale > minScaleLimit && spiralViewCumulativeScale < maxScaleLimit {
+                let point = gestureRecognizer.location(in: view)
+                //lsystemView.transform = lsystemView.transform.translatedBy(x: point.x - lastPoint!.x, y: point.y - lastPoint!.y)
+                lastPoint = point
                 
                 // Increment the scale
                 spiralViewCumulativeScale *= gestureRecognizer.scale
                 //lsystemView.center = gestureRecognizer.location(in: view)
                 // Execute the transform
                 lsystemView.transform = lsystemView.transform.scaledBy(x: gestureRecognizer.scale,
-                                                                       y: gestureRecognizer.scale);
-                
-                /*let point = gestureRecognizer.location(in: lsystemView)
-                 lsystemView.transform = lsystemView.transform.translatedBy(x: point.x - lastPoint!.x, y: point.y - lastPoint!.y)
-                 lastPoint = point*/
+                                                                    y: gestureRecognizer.scale);
             } else {
                 // If the cumulative scale has extended beyond the range, check
                 // to see if the user is attempting to scale it back within range

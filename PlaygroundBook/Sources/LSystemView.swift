@@ -22,13 +22,6 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
     //The main layer displaying the path(s)
     var mainLayer = CAShapeLayer()
     
-    var strokeEndValues: [CGFloat]?
-    //var transforms: [CATransform3D]?
-    var startingPoint: CGPoint?
-    var turtleKeyTimes: [NSNumber]?
-    var forwardCount: Int?
-    var lastTransform: CGAffineTransform?
-    
     public init(frame: CGRect, config: LSystemConfiguration) {
         self.config = config
         super.init(frame: frame)
@@ -41,9 +34,6 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
     
     public override func draw(_ rect: CGRect) {
         generatePaths()
-        if config.drawMode == .turtle {
-            generateTurtleKeyTimes()
-        }
         
         if let paths = paths {
             mainLayer.path = paths.last!
@@ -73,51 +63,60 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
                 //TODO: implement
                 break
             case .turtle:
-                /*let drawingAnimation = CAKeyframeAnimation(keyPath: "strokeEnd")
-                drawingAnimation.values = strideArray(total: forwardCount!)
-                drawingAnimation.keyTimes = turtleKeyTimes
-                drawingAnimation.duration = Double(sequences!.last!.count) / 2.0*/
+                let drawingAnimation = CAKeyframeAnimation(keyPath: "strokeEnd")
+                drawingAnimation.values = generateStrokeEndValues()
+                drawingAnimation.duration = Double(sequences!.last!.count) / 10.0
+                mainLayer.add(drawingAnimation, forKey: "drawingAnimation")
                 
-                let animation = CABasicAnimation(keyPath: "strokeEnd")
-                animation.fromValue = 0.0
-                animation.toValue = 1.0
-                animation.duration = 5
-                //mainLayer.add(animation, forKey: "drawPathAnimation")
+                let startAndStep = getStartAndStep(sequence: sequences!.last!)
+                let start = startAndStep.0
+                let step = startAndStep.1
+                let transforms: [CATransform3D] = getTurtleTransforms(sequence: sequences!.last!, startingPoint: start, config: config, step: step)
                 
                 //Describing the turtle as an arrow
                 let turtle = UIBezierPath()
-                turtle.move(to: CGPoint(x: 0, y: -3))
-                turtle.addLine(to: CGPoint(x: 2, y: 2))
-                turtle.addLine(to: CGPoint(x: 0, y: 1))
-                turtle.addLine(to: CGPoint(x: -2, y: 2))
-                turtle.addLine(to: CGPoint(x: 0, y: -3))
+                turtle.move(to: CGPoint(x: 0, y: -step / 3.0))
+                turtle.addLine(to: CGPoint(x: step / 5.0, y: step / 5.0))
+                turtle.addLine(to: CGPoint(x: 0, y: step / 10.0))
+                turtle.addLine(to: CGPoint(x: -step / 5.0, y: step / 5.0))
+                turtle.addLine(to: CGPoint(x: 0, y: -step / 3.0))
                 
                 let turtleLayer = CAShapeLayer()
                 turtleLayer.path = turtle.cgPath
+                turtleLayer.transform = transforms.last!
                 turtleLayer.fillColor = UIColor.red.cgColor
+                
                 let turtleAnimaton = CAKeyframeAnimation(keyPath: "transform")
-                
-                let startAndStep = getStartAndStep(sequence: sequences!.last!)
-                let transforms: [CATransform3D] = getTurtleTransforms(sequence: sequences!.last!, startingPoint: startAndStep.0, config: config, step: startAndStep.1)
-                
                 turtleAnimaton.values = transforms
-                turtleAnimaton.duration = Double(sequences!.last!.count) / 2.0
+                turtleAnimaton.duration = Double(sequences!.last!.count) / 10.0
                 turtleAnimaton.isRemovedOnCompletion = false
-                
                 turtleLayer.add(turtleAnimaton, forKey: "turtleAnimation")
-                mainLayer.add(animation, forKey: "drawingAnimation")
+                
                 layer.addSublayer(mainLayer)
                 layer.insertSublayer(turtleLayer, above: mainLayer)
             }
         }
     }
     
-    func strideArray(total: Int) -> [CGFloat] {
-        var values: [CGFloat] = []
-        for i in 0..<total {
-            values.append(CGFloat(i) / CGFloat(total))
+    func generateStrokeEndValues() -> [CGFloat] {
+        var forwardCount: CGFloat = 0
+        for action in sequences!.last! {
+            if action == .forward {
+                forwardCount += 1
+            }
         }
-        return values
+        
+        let step: CGFloat = 1.0 / forwardCount
+        var strokeEndValues: [CGFloat] = []
+        var strokeEnd: CGFloat = 0
+        for action in sequences!.last! {
+            if action == .forward {
+                strokeEnd += step
+            }
+            strokeEndValues.append(strokeEnd)
+        }
+        
+        return strokeEndValues
     }
     
     func generatePaths() {
@@ -145,25 +144,10 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
         return (start, step)
     }
     
-    func generateTurtleKeyTimes() {
-        var time: Int = 0
-        var keyTimesInt: [Int] = [0]
-        for action in sequences!.last! {
-            time += 1
-            if action == .forward {
-                keyTimesInt.append(time)
-            }
-        }
-        turtleKeyTimes = []
-        for val in keyTimesInt {
-            turtleKeyTimes!.append(NSNumber(value: Double(val) / Double(keyTimesInt.last!)))
-        }
-    }
-    
     func generateSequences() {
         //Generating the sequences for any number of iterations to allow morphing
         var sequences: [[Action]] = []
-        for i in 1...config.iterations {
+        for i in 0...config.iterations {
             let finishedSequence = replace(iterations: i, axiom: config.axiom, rules: config.rules)
             sequences.append(stringToSequence(string: finishedSequence, actionMap: config.actionMap))
         }

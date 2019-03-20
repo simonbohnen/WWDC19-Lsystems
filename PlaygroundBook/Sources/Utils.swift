@@ -24,6 +24,9 @@ public func stringToSequence(string: String, actionMap: [Character: Action]) -> 
 
 public func replace(iterations: Int, axiom: String, rules: [Character: String]) -> String {
     var cur = axiom
+    if iterations == 0 {
+        return axiom
+    }
     for _ in 1...iterations {
         var new = ""
         for char in cur {
