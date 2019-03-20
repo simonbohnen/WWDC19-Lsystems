@@ -51,8 +51,10 @@ public func getTurtleTransforms(sequence: [Action], startingPoint: CGPoint, conf
             point.move(x: step * direction.x, y: step * direction.y)
         case .rotateLeft:
             cumulatedAngle -= config.angle
+            direction = direction.applying(CGAffineTransform(rotationAngle: -config.angle))
         case .rotateRight:
             cumulatedAngle += config.angle
+            direction = direction.applying(CGAffineTransform(rotationAngle: config.angle))
         case .push:
             posStack.append((point, direction))
             break

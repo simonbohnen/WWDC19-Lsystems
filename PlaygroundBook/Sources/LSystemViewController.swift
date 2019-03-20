@@ -49,7 +49,7 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
     }
     
     private var oldBounds = CGRect()
-    private let padding: CGFloat = 20.0
+    private let padding: CGFloat = 50.0
     
     override public func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()

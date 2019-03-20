@@ -23,7 +23,7 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
     var mainLayer = CAShapeLayer()
     
     var strokeEndValues: [CGFloat]?
-    var transforms: [CATransform3D]?
+    //var transforms: [CATransform3D]?
     var startingPoint: CGPoint?
     var turtleKeyTimes: [NSNumber]?
     var forwardCount: Int?
@@ -73,10 +73,16 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
                 //TODO: implement
                 break
             case .turtle:
-                let drawingAnimation = CAKeyframeAnimation(keyPath: "strokeEnd")
+                /*let drawingAnimation = CAKeyframeAnimation(keyPath: "strokeEnd")
                 drawingAnimation.values = strideArray(total: forwardCount!)
                 drawingAnimation.keyTimes = turtleKeyTimes
-                drawingAnimation.duration = Double(sequences!.last!.count) / 2.0
+                drawingAnimation.duration = Double(sequences!.last!.count) / 2.0*/
+                
+                let animation = CABasicAnimation(keyPath: "strokeEnd")
+                animation.fromValue = 0.0
+                animation.toValue = 1.0
+                animation.duration = 5
+                //mainLayer.add(animation, forKey: "drawPathAnimation")
                 
                 //Describing the turtle as an arrow
                 let turtle = UIBezierPath()
@@ -87,22 +93,19 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
                 turtle.addLine(to: CGPoint(x: 0, y: -3))
                 
                 let turtleLayer = CAShapeLayer()
-                turtleLayer.path = turtle.cgPath //.copy(using: &lastTransform!)
+                turtleLayer.path = turtle.cgPath
                 turtleLayer.fillColor = UIColor.red.cgColor
                 let turtleAnimaton = CAKeyframeAnimation(keyPath: "transform")
                 
-                var newTurtleTransforms: [CATransform3D] = []
-                let lastTransform3D = CATransform3DMakeAffineTransform(lastTransform!)
-                for transform in transforms! {
-                    newTurtleTransforms.append(CATransform3DConcat(transform, lastTransform3D))
-                }
+                let startAndStep = getStartAndStep(sequence: sequences!.last!)
+                let transforms: [CATransform3D] = getTurtleTransforms(sequence: sequences!.last!, startingPoint: startAndStep.0, config: config, step: startAndStep.1)
                 
-                turtleAnimaton.values = newTurtleTransforms
+                turtleAnimaton.values = transforms
                 turtleAnimaton.duration = Double(sequences!.last!.count) / 2.0
                 turtleAnimaton.isRemovedOnCompletion = false
                 
                 turtleLayer.add(turtleAnimaton, forKey: "turtleAnimation")
-                mainLayer.add(drawingAnimation, forKey: "drawingAnimation")
+                mainLayer.add(animation, forKey: "drawingAnimation")
                 layer.addSublayer(mainLayer)
                 layer.insertSublayer(turtleLayer, above: mainLayer)
             }
@@ -120,20 +123,26 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
     func generatePaths() {
         paths = []
         for sequence in sequences! {
-            let startAndBox = getBoxAndStartPoint(sequence: sequence, config: config)
-            let width = startAndBox.2
-            let height = startAndBox.3
-            var step: CGFloat
-            var start: CGPoint
-            if width > height {
-                step = bounds.width / width
-                start = CGPoint(x: startAndBox.0 * step, y: startAndBox.1 * step + bounds.midY - height * step / 2)
-            } else {
-                step = bounds.height / height
-                start = CGPoint(x: startAndBox.0 * step + bounds.midX - width * step / 2, y: startAndBox.1 * step)
-            }
-            paths?.append(getPath(sequence: sequence, startingPoint: start, config: config, step: step))
+            let startAndStep = getStartAndStep(sequence: sequence)
+            paths?.append(getPath(sequence: sequence, startingPoint: startAndStep.0, config: config, step: startAndStep.1))
         }
+    }
+    
+    func getStartAndStep(sequence: [Action]) -> (CGPoint, CGFloat){
+        let startAndBox = getBoxAndStartPoint(sequence: sequence, config: config)
+        let width = startAndBox.2
+        let height = startAndBox.3
+        var step: CGFloat
+        var start: CGPoint
+        if width > height {
+            step = bounds.width / width
+            start = CGPoint(x: startAndBox.0 * step, y: startAndBox.1 * step + bounds.midY - height * step / 2)
+        } else {
+            step = bounds.height / height
+            start = CGPoint(x: startAndBox.0 * step + bounds.midX - width * step / 2, y: startAndBox.1 * step)
+        }
+        
+        return (start, step)
     }
     
     func generateTurtleKeyTimes() {
