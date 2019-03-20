@@ -25,6 +25,7 @@ let actionMap : [Character : Action] = [
 let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor.green.cgColor, drawMode: .morph)
 let lViewController = LSystemViewController(config: config, userInteractionEnabled: true)
 PlaygroundPage.current.liveView = lViewController
+//lViewController.lsystemView.draw(CGRect(x: 0,y:0, width: 0, height:0))
 
 /*let axiom = "F"
 let rules : [Character: String] = [

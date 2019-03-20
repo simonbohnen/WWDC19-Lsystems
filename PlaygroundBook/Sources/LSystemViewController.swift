@@ -10,7 +10,7 @@ import UIKit
 import PlaygroundSupport
 
 public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeAreaContainer {
-    var lsystemView : LSystemView?
+    public var lsystemView : LSystemView?
     var config: LSystemConfiguration
     var userInteractionEnabled: Bool
     
@@ -34,6 +34,7 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
     override public func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = UIColor.black
         addAndConstrainImageView()
         
         if userInteractionEnabled {
@@ -70,8 +71,7 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
             spiralViewCumulativeScale *= scale
             
             // Execute the transform
-            lsystemView?.transform = (lsystemView?.transform.scaledBy(x: scale,
-                                                                    y: scale))!;
+            lsystemView?.transform = (lsystemView?.transform.scaledBy(x: scale, y: scale))!
         }
     }
     

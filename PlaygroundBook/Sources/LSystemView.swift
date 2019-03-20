@@ -7,12 +7,13 @@
 
 import Foundation
 import UIKit
+import PlaygroundSupport
 
 public enum DrawMode {
     case morph, turtle, draw, display
 }
 
-public class LSystemView: UIView, UIGestureRecognizerDelegate {
+public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveViewSafeAreaContainer {
     var paths: [CGPath]?
     //The sequences this LSystemView will display. These are generated using increasingly many interations.
     var sequences: [[Action]]?
@@ -32,30 +33,17 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
         self.config = config
         super.init(frame: frame)
         generateSequences()
-        generatePaths()
-        if config.drawMode == .turtle {
-            generateTurtleKeyTimes()
-        }
-        //setNeedsDisplay()
     }
      
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    var isInitialDraw: Bool = true
-    
     public override func draw(_ rect: CGRect) {
-        /*if isInitialDraw {
-            isInitialDraw = false
-            return
-        }*/
-        let borderLayer = CAShapeLayer()
-        let borderPath = UIBezierPath(rect: CGRect(x: 0, y: 0, width: frame.width, height: frame.height))
-        borderLayer.path = borderPath.cgPath
-        borderLayer.strokeColor = UIColor.black.cgColor
-        borderLayer.fillColor = nil
-        layer.addSublayer(borderLayer)
+        generatePaths()
+        if config.drawMode == .turtle {
+            generateTurtleKeyTimes()
+        }
         
         if let paths = paths {
             mainLayer.path = paths.last!
@@ -74,25 +62,6 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
                 
                 mainLayer.add(animation, forKey: "drawPathAnimation")
                 layer.addSublayer(mainLayer)
-                
-                // 1
-                let textLayer = CATextLayer()
-                textLayer.frame = self.bounds
-                
-                // 2
-                let string = String(Double(frame.width)) + " " + String(Double(frame.height)) + "\n"
-                
-                textLayer.string = string
-                
-                // 3
-                textLayer.font = CTFontCreateWithName("Helvetica" as CFString, 20, nil)
-                
-                // 4
-                textLayer.foregroundColor = UIColor.darkGray.cgColor
-                textLayer.isWrapped = true
-                textLayer.alignmentMode = CATextLayerAlignmentMode.left
-                textLayer.contentsScale = UIScreen.main.scale
-                layer.addSublayer(textLayer)
             case .draw:
                 let animation = CABasicAnimation(keyPath: "strokeEnd")
                 animation.fromValue = 0.0
@@ -154,34 +123,18 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate {
             let startAndBox = getBoxAndStartPoint(sequence: sequence, config: config)
             let width = startAndBox.2
             let height = startAndBox.3
-            var step: CGFloat = 10
+            var step: CGFloat
+            var start: CGPoint
             if width > height {
-                step = frame.width / width
+                step = bounds.width / width
+                start = CGPoint(x: startAndBox.0 * step, y: startAndBox.1 * step + bounds.midY - height * step / 2)
             } else {
-                step = frame.height / height
+                step = bounds.height / height
+                start = CGPoint(x: startAndBox.0 * step + bounds.midX - width * step / 2, y: startAndBox.1 * step)
             }
-            let start = CGPoint(x: startAndBox.0 * step, y: startAndBox.1 * step) //CGPoint(x: 200, y: 200)
             paths?.append(getPath(sequence: sequence, startingPoint: start, config: config, step: step))
         }
     }
-    
-    /*func getAngle(vector: CGPoint) -> CGFloat {
-        if vector.x == 0 {
-            if vector.y > 0 {
-                return .pi
-            } else {
-                return 0
-            }
-        }
-        if vector.y == 0 {
-            if vector.x > 0 {
-                return .pi / 2
-            } else {
-                return -.pi / 2
-            }
-        }
-        return atan2(vector.y, vector.x)
-    }*/
     
     func generateTurtleKeyTimes() {
         var time: Int = 0
