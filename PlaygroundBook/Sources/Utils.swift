@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import PlaygroundSupport
 
 public enum Action {
     case forward, rotateRight, rotateLeft, push, pop, sneakForward //TODO besserer name
@@ -22,7 +23,9 @@ public func stringToSequence(string: String, actionMap: [Character: Action]) -> 
     return actionSequence
 }
 
-public func replace(iterations: Int, axiom: String, rules: [Character: String]) -> String {
+let maxLength = 10000
+
+public func replace(iterations: Int, axiom: String, rules: [Character: String]) -> String? {
     var cur = axiom
     if iterations == 0 {
         return axiom
@@ -34,6 +37,9 @@ public func replace(iterations: Int, axiom: String, rules: [Character: String]) 
                 new.append(replacement)
             } else {
                 new.append(char)
+            }
+            if new.count > maxLength {
+                return nil
             }
         }
         cur = new
