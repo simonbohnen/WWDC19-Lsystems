@@ -8,7 +8,10 @@
 	<array>
 		<string>Introduction.playgroundpage</string>
 		<string>Generation.playgroundpage</string>
-		<string>PlaygroundPage.playgroundpage</string>
+		<string>Angle.playgroundpage</string>
+		<string>DragonCurve.playgroundpage</string>
+		<string>End.playgroundpage</string>
+		<string>Testpage.playgroundpage</string>
 	</array>
 </dict>
 </plist>
