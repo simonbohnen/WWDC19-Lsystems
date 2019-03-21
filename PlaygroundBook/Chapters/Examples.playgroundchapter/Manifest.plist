@@ -3,10 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>Name</key>
-	<string>L-Systems</string>
+	<string>Examples</string>
 	<key>Pages</key>
 	<array>
-		<string>FractalTree.playgroundpage</string>
+		<string>01.playgroundpage</string>
 	</array>
 </dict>
 </plist>
