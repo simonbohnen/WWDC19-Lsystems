@@ -54,15 +54,19 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
                 mainLayer.path = paths.last!
                 mainLayer.strokeColor = config.strokeColor
                 let step = getStartAndStep(sequence: sequences!.last!).1
-                mainLayer.lineWidth = step / 20.0
+                mainLayer.lineWidth = 0.5 //step / 20.0
                 mainLayer.fillColor = nil
                 
                 switch(config.drawMode) {
                 case .morph:
                     let animation = CAKeyframeAnimation(keyPath: "path")
-                    
-                    animation.values = paths
-                    animation.duration = Double(paths.count) / 2.0
+                    var pathsDuplicated: [CGPath] = []
+                    for path in paths {
+                        pathsDuplicated.append(path)
+                        pathsDuplicated.append(path)
+                    }
+                    animation.values = pathsDuplicated
+                    animation.duration = Double(paths.count) / 1.0
                     
                     //animation.fillMode = CAMediaTimingFillMode.forwards
                     animation.isRemovedOnCompletion = false

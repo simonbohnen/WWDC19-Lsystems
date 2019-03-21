@@ -23,7 +23,7 @@ public func stringToSequence(string: String, actionMap: [Character: Action]) -> 
     return actionSequence
 }
 
-let maxLength = 10000
+let maxLength = 20000
 
 public func replace(iterations: Int, axiom: String, rules: [Character: String]) -> String? {
     var cur = axiom

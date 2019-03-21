@@ -9,9 +9,6 @@ func drawPath(_ path: String) {
         "R": Action.rotateRight,
         "L": Action.rotateLeft
     ]
-    let config = LSystemConfiguration(axiom: path, rules: rules, iterations: 0, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor.green.cgColor, drawMode: .turtle)
-    let lViewController = LSystemViewController(config: config, userInteractionEnabled: true)
-    PlaygroundPage.current.liveView = lViewController
 }
 
 //#-end-hidden-code
@@ -30,11 +27,27 @@ func drawPath(_ path: String) {
  You can always zoom and drag the path to explore it in further detail.
  */
 
-let path = /*#-editable-code*/"RFLFLFRF"/*#-end-editable-code*/
-drawPath(path)
+let axiom = /*#-editable-code*/"A"/*#-end-editable-code*/
+let rules: [Character: String] = [
+    "A": "B[LA]RA",
+    "B": "BB"
+]
+let iterations = 7
+let actionMap: [Character: Action] = [
+    "A": Action.forward,
+    "B": Action.forward,
+    "[": Action.push,
+    "]": Action.pop,
+    "L": Action.rotateLeft,
+    "R": Action.rotateRight
+]
+
+let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 4), strokeColor: UIColor.green.cgColor, drawMode: .morph)
+let lViewController = LSystemViewController(config: config, userInteractionEnabled: true)
+PlaygroundPage.current.liveView = lViewController
 
 //#-hidden-code
-if path.starts(with: "RFLFLFRFRF") {
+/*if path.starts(with: "RFLFLFRFRF") {
     PlaygroundPage.current.assessmentStatus = .pass(message: "Lookin' great! Head to the [next page](@next) to explore what can be done with these letters!")
-}
+}*/
 //#-end-hidden-code

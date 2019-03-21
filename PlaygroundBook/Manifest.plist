@@ -15,10 +15,11 @@
 	<key>SwiftVersion</key>
 	<string>$(SWIFT_VERSION)</string>
 	<key>Name</key>
-	<string>L-Systems</string>
+	<string>L-systems</string>
 	<key>Chapters</key>
 	<array>
-		<string>L-Systems.playgroundchapter</string>
+		<string>L-systems.playgroundchapter</string>
+		<string>Examples.playgroundchapter</string>
 	</array>
 </dict>
 </plist>
