@@ -1,0 +1,183 @@
+
+            transforms = []
+            let newPath = UIBezierPath()
+            var point = CGPoint(x: startingPoint!.x, y: startingPoint!.y)
+            newPath.move(to: point)
+            var direction = CGPoint(x: 0, y: -1)
+            var cumulatedAngle: CGFloat = 0
+            var posStack: [(CGPoint, CGPoint)] = []
+            
+            for action in sequence {
+                switch action {
+                case .forward:
+                    point.move(x: LSystemView.step * direction.x, y: LSystemView.step * direction.y)
+                    newPath.addLine(to: point)
+                case .rotateLeft:
+                    direction = direction.applying(CGAffineTransform(rotationAngle: config.angle))
+                    cumulatedAngle += config.angle
+                case .rotateRight:
+                    direction = direction.applying(CGAffineTransform(rotationAngle: -config.angle))
+                    cumulatedAngle -= config.angle
+                case .push:
+                    posStack.append((point, direction))
+                    break
+                case .pop:
+                    let popped = posStack.popLast()! //TODO: Was machen wenns keine mehr gibt?
+                    point = popped.0
+                    newPath.move(to: popped.0)
+                    direction = popped.1
+                    break
+                case .sneakForward:
+                    break
+                }
+                if cumulatedAngle >= 2 * .pi {
+                    cumulatedAngle -= 2 * .pi
+                }
+                if config.drawMode == .turtle {
+                    var transform = CATransform3DMakeTranslation(point.x, point.y, 0)
+                    transform = CATransform3DRotate(transform, cumulatedAngle, 0, 0, 1)
+                    transforms?.append(transform)
+                }
+            }
+            
+            paths!.append(newPath.cgPath)
+        }
+        
+        forwardCount = 0
+        for action in sequences.last! {
+            if action == .forward {
+                forwardCount! += 1
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    func scalePath(path: CGPath) -> CGAffineTransform {
+        // I'm assuming that the view and original shape layer is already created
+        let boundingBox = path.boundingBoxOfPath
+        
+        let boundingBoxAspectRatio = boundingBox.width / boundingBox.height
+        let viewAspectRatio = self.frame.width / self.frame.height
+        
+        var scaleFactor: CGFloat = 1.0;
+        if boundingBoxAspectRatio > viewAspectRatio {
+            // Width is limiting factor
+            scaleFactor = self.frame.width / boundingBox.width
+        } else {
+            // Height is limiting factor
+            scaleFactor = self.frame.height / boundingBox.height
+        }
+        
+        // Scaling the path ...
+        var scaleTransform = CGAffineTransform.identity
+        // Scale down the path first
+        scaleTransform = scaleTransform.scaledBy(x: scaleFactor, y: scaleFactor)
+        // Then translate the path to the upper left corner
+        scaleTransform = scaleTransform.translatedBy(x: -boundingBox.minX, y: -boundingBox.minY);
+        
+        // If you want to be fancy you could also center the path in the view
+        // i.e. if you don't want it to stick to the top.
+        // It is done by calculating the heigth and width difference and translating
+        // half the scaled value of that in both x and y (the scaled side will be 0)
+        let scaledSize = boundingBox.size.applying(CGAffineTransform(scaleX: scaleFactor, y: scaleFactor))
+        let centerOffset = CGSize(width:  (frame.width - scaledSize.width) / (scaleFactor * 2.0),
+                                  height: (frame.height - scaledSize.height) / (scaleFactor * 2.0))
+        scaleTransform = scaleTransform.translatedBy(x: centerOffset.width, y: centerOffset.height)
+        // End of "center in view" transformation code
+        if path == paths?.last! {
+            lastTransform = scaleTransform
+        }
+        return scaleTransform
+    }
+
+
+
+
+
+
+
+
+
+    
+    func scalePaths() {
+        var scaledPaths: [CGPath] = []
+        for path in paths! {
+            var transform = scalePath(path: path)
+            scaledPaths.append(path.copy(using: &transform)!)
+        }
+        paths = scaledPaths
+    }
+
+
+
+
+
+        
+        let borderLayer = CAShapeLayer()
+        let borderPath = UIBezierPath(rect: bounds)
+        borderLayer.strokeColor = UIColor.black.cgColor
+        borderLayer.path = borderPath.cgPath
+        
+        layer.addSublayer(borderLayer)
+
+
+
+
+
+    
+    /*func getAngle(vector: CGPoint) -> CGFloat {
+        if vector.x == 0 {
+            if vector.y > 0 {
+                return .pi
+            } else {
+                return 0
+            }
+        }
+        if vector.y == 0 {
+            if vector.x > 0 {
+                return .pi / 2
+            } else {
+                return -.pi / 2
+            }
+        }
+        return atan2(vector.y, vector.x)
+    }*/
+
+
+
+    
+    func generateTurtleKeyTimes() {
+        var time: Int = 0
+        var keyTimesInt: [Int] = [0]
+        for action in sequences!.last! {
+            time += 1
+            if action == .forward {
+                keyTimesInt.append(time)
+            }
+        }
+        turtleKeyTimes = []
+        for val in keyTimesInt {
+            turtleKeyTimes!.append(NSNumber(value: Double(val) / Double(keyTimesInt.last!)))
+        }
+    }
+
+
+
+    
+    /*func strideArray(total: Int) -> [CGFloat] {
+        var values: [CGFloat] = []
+        for i in 0..<total {
+            values.append(CGFloat(i) / CGFloat(total))
+        }
+        return values
+    }*/
