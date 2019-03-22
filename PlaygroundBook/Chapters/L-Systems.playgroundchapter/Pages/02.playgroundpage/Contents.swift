@@ -21,7 +21,7 @@ func drawPath(_ axiom: String, _ rules: [Character: String], _ iterations: Int) 
  */
 
 let axiom = /*#-editable-code*/"F"/*#-end-editable-code*/
-let rules: [Character: String] [
+let rules: [Character: String] = [
     "F": "RFF"
 ]
 let iterations = 4
