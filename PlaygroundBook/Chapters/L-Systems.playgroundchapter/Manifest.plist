@@ -3,15 +3,16 @@
 <plist version="1.0">
 <dict>
 	<key>Name</key>
-	<string>L-Systems</string>
+	<string>L-systems</string>
 	<key>Pages</key>
 	<array>
-		<string>Introduction.playgroundpage</string>
-		<string>Generation.playgroundpage</string>
-		<string>Angle.playgroundpage</string>
-		<string>DragonCurve.playgroundpage</string>
-		<string>End.playgroundpage</string>
-		<string>Testpage.playgroundpage</string>
+		<string>00.cutscenepage</string>
+		<string>01.playgroundpage</string>
+		<string>02.playgroundpage</string>
+		<string>03.playgroundpage</string>
+		<string>04.playgroundpage</string>
+		<string>05.playgroundpage</string>
+		<string>06.playgroundpage</string>
 	</array>
 </dict>
 </plist>

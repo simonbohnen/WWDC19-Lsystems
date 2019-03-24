@@ -23,12 +23,12 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
     var mainLayer = CAShapeLayer()
     //Indicates whether the drawn path is too large, is used to display error to user
     var pathTooLarge: Bool = false
-    
+    //The WorkItem which is executed once all animations finish.
+    //This is used to set the .pass status for the current page
     var onFinishedDrawing: DispatchWorkItem
     
     var pathView: UILabel?
     var words: [String]?
-    //var duration: Double
     
     public init(frame: CGRect, config: LSystemConfiguration, pathView: UILabel?, onFinishedDrawing: DispatchWorkItem) {
         self.config = config
@@ -69,10 +69,12 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
                         pathsDuplicated.append(path)
                     }
                     animation.values = pathsDuplicated
-                    animation.duration = Double(paths.count) * 2.0 / config.speed
+                    let duration = Double(paths.count) * 2.0 / config.speed
+                    animation.duration = duration
                     
                     mainLayer.add(animation, forKey: "drawPathAnimation")
                     layer.addSublayer(mainLayer)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + duration, execute: onFinishedDrawing)
                     
                 case .draw:
                     configureMainLayer()
@@ -168,7 +170,7 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
         mainLayer.path = paths!.last!
         mainLayer.strokeColor = config.strokeColor
         let step = getStartAndStep(sequence: sequences!.last!).1
-        mainLayer.lineWidth = max(0.5, step / 20.0)
+        mainLayer.lineWidth = max(1, step / 20.0)
         mainLayer.fillColor = nil
     }
     

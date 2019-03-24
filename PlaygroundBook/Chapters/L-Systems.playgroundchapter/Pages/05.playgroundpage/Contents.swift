@@ -15,23 +15,28 @@ func drawLsystem(_ axiom: String, _ rules: [Character: String], _ iterations: In
 
 //#-end-hidden-code
 /*:
-
+ You've successfully learned the basics of L-systems! To round things up, here's the dragon curve you saw in the beginning written as an L-system. Use this page to experiment with all the options you had on the previous pages.
+ 
+ Thank you so much for trying out my playground, I hope to see you at WWDC19!
  */
-//#-editable-code
-let axiom = "FX"
+//When experimenting with your own axiom and rules, try to keep them symmetric to generate the coolest patterns!
+let axiom = /*#-editable-code*/"FX"/*#-end-editable-code*/
 let rules: [Character: String] = [
+    //#-editable-code
     "X": "XRYFR",
     "Y": "LFXLY"
+    //#-end-editable-code
 ]
-let angle = Double.pi / 2
-let iterations = 6
-let drawMode = DrawMode.morphing
-let speed = 1.0
+let angle = /*#-editable-code*/Double.pi / 2/*#-end-editable-code*/
+let iterations = /*#-editable-code*/6/*#-end-editable-code*/
+let drawMode = DrawMode/*#-editable-code*/.morphing/*#-end-editable-code*/
+let speed = /*#-editable-code*/1.0/*#-end-editable-code*/
 let actions : [Character : Action] = [
+    //#-editable-code
     "F": Action.forward,
     "R": Action.rotateRight,
     "L": Action.rotateLeft
+    //#-end-editable-code
 ]
-let pathColor = UIColor.green
+let pathColor = /*#-editable-code*/#colorLiteral(red: 0.2980392157, green: 0.8509803922, blue: 0.3921568627, alpha: 1)/*#-end-editable-code*/
 drawLsystem(axiom, rules, iterations, drawMode, speed, angle, actions, pathColor)
-//#-end-editable-code

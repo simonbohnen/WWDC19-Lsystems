@@ -9,11 +9,11 @@ func drawLsystem(_ axiom: String, _ rules: [Character: String], _ iterations: In
         "L": Action.rotateLeft
     ]
     let onFinishedDrawing = DispatchWorkItem {
-        /*if path.starts(with: "RFLFLFRFRF") {
-            PlaygroundPage.current.assessmentStatus = .pass(message: "Lookin' great! Head to the [next page](@next) to explore what can be done with these letters!")
-        }*/
+        if rules["F"] == "FLFRFRFLF" && speed == 1.0 {
+            PlaygroundPage.current.assessmentStatus = .pass(message: "Beautiful, isn't it? Go to the [next page](@next) to see what else we can generate!")
+        }
     }
-    let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor.green.cgColor, drawMode: drawMode, speed: speed)
+    let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor(displayP3Red: 76.0 / 255.0, green: 217.0 / 255.0, blue: 100.0 / 255.0, alpha: 1.0).cgColor, drawMode: drawMode, speed: speed)
     let lViewController = LSystemViewController(config: config, userInteractionEnabled: true, onFinishedDrawing: onFinishedDrawing)
     PlaygroundPage.current.liveView = lViewController
 }
