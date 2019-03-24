@@ -10,7 +10,7 @@ import UIKit
 import PlaygroundSupport
 
 public enum DrawMode {
-    case morph, turtle, draw, display, page2mode
+    case morphing, turtle, draw, display, showEveryIteration
 }
 
 public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
@@ -24,12 +24,16 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
     //Indicates whether the drawn path is too large, is used to display error to user
     var pathTooLarge: Bool = false
     
+    var onFinishedDrawing: DispatchWorkItem
+    
     var pathView: UILabel?
     var words: [String]?
+    //var duration: Double
     
-    public init(frame: CGRect, config: LSystemConfiguration, pathView: UILabel?) {
+    public init(frame: CGRect, config: LSystemConfiguration, pathView: UILabel?, onFinishedDrawing: DispatchWorkItem) {
         self.config = config
         self.pathView = pathView
+        self.onFinishedDrawing = onFinishedDrawing
         super.init(frame: frame)
         generateSequences()
     }
@@ -56,7 +60,7 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
             
             if let paths = paths {
                 switch(config.drawMode) {
-                case .morph:
+                case .morphing:
                     configureMainLayer()
                     let animation = CAKeyframeAnimation(keyPath: "path")
                     var pathsDuplicated: [CGPath] = []
@@ -85,26 +89,37 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
                     layer.addSublayer(mainLayer)
                     
                 case .turtle:
-                    addTurtleAnimation(iteration: words!.count - 1) //sequences!.count - 1
+                    let duration = getDuration(iteration: words!.count - 1, withDelay: false)
+                    addTurtleAnimation(iteration: words!.count - 1, duration: duration)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + duration, execute: onFinishedDrawing)
                     
-                case .page2mode:
-                    let delay = 3.0
-                    addTurtleAnimation(iteration: 0)
+                case .showEveryIteration:
+                    addTurtleAnimation(iteration: 0, duration: getDuration(iteration: 0, withDelay: false))
                     
+                    var delay = 0.0
                     for i in 1...config.iterations {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + (duration + delay) * Double(i), execute: {
+                        delay += getDuration(iteration: i - 1, withDelay: true)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: {
                             self.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
-                            self.addTurtleAnimation(iteration: i)
+                            self.addTurtleAnimation(iteration: i, duration: self.getDuration(iteration: i, withDelay: false))
                         })
                     }
+                    
+                    DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: onFinishedDrawing)
                 }
             }
         }
     }
     
-    let duration = 2.0
+    func getDuration(iteration: Int, withDelay: Bool) -> Double {
+        var duration = Double(words![iteration].count)
+        if withDelay {
+            duration += 3.0
+        }
+        return duration / config.speed
+    }
     
-    func addTurtleAnimation(iteration: Int) {
+    func addTurtleAnimation(iteration: Int, duration: Double) {
         if let pathView = pathView {
             pathView.text = words![iteration]
         }
@@ -123,7 +138,7 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
         
         let drawingAnimation = CAKeyframeAnimation(keyPath: "strokeEnd")
         drawingAnimation.values = self.generateStrokeEndValues(iteration: iteration)
-        drawingAnimation.duration = self.duration // config.speed //Double(sequences!.last!.count) / 10.0
+        drawingAnimation.duration = duration
         newPathLayer.add(drawingAnimation, forKey: "drawingAnimation")
         
         let transforms: [CATransform3D] = getTurtleTransforms(sequence: self.sequences![iteration], startingPoint: start, config: self.config, step: step)
@@ -142,7 +157,7 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
         
         let turtleAnimation = CAKeyframeAnimation(keyPath: "transform")
         turtleAnimation.values = transforms
-        turtleAnimation.duration = self.duration //Double(sequences!.last!.count) / 10.0
+        turtleAnimation.duration = duration
         newTurtleLayer.add(turtleAnimation, forKey: "turtleAnimation")
         
         self.layer.addSublayer(newPathLayer)

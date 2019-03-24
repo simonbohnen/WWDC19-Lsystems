@@ -10,10 +10,11 @@ import UIKit
 import PlaygroundSupport
 
 public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeAreaContainer {
-    public var lsystemView: LSystemView?
-    public var pathView: UILabel?
+    var lsystemView: LSystemView?
+    var pathView: UILabel?
     var config: LSystemConfiguration
     var userInteractionEnabled: Bool
+    var onFinishedDrawing: DispatchWorkItem
     
     /// Minimum scale to which the user may ‘pinch to zoom’
     private let maxScaleLimit: CGFloat = .greatestFiniteMagnitude
@@ -22,9 +23,10 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
     /// Variable to track how far the lsystemView has been cumulatively scaled
     private var lsystemViewCumulativeScale: CGFloat = 1.0
     
-    public init(config: LSystemConfiguration, userInteractionEnabled: Bool) {
+    public init(config: LSystemConfiguration, userInteractionEnabled: Bool, onFinishedDrawing: DispatchWorkItem) {
         self.userInteractionEnabled = userInteractionEnabled
         self.config = config
+        self.onFinishedDrawing = onFinishedDrawing
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -35,7 +37,7 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        if config.drawMode == .page2mode {
+        if config.drawMode == .showEveryIteration {
             pathView = UILabel()
             pathView!.textAlignment = NSTextAlignment.center
             pathView!.textColor = UIColor.white
@@ -43,7 +45,9 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
         
         addAndConstrainLSystemView()
         view.backgroundColor = UIColor.black
-        self.view.addSubview(pathView!)
+        if config.drawMode == .showEveryIteration {
+            self.view.addSubview(pathView!)
+        }
         
         if userInteractionEnabled {
             let pinchGesture = UIPinchGestureRecognizer(target: self,
@@ -75,7 +79,7 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
                 scale = (liveViewSafeAreaGuide.layoutFrame.height - padding) / (lsystemView?.frame.height)!
             }
             
-            if config.drawMode == .page2mode {
+            if config.drawMode == .showEveryIteration {
                 scale /= 1.5
             }
             
@@ -88,7 +92,7 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
             //Position pathView
             let frameGuide = liveViewSafeAreaGuide.layoutFrame
             let height: CGFloat = 50
-            if config.drawMode == .page2mode {
+            if config.drawMode == .showEveryIteration {
                 pathView!.frame = CGRect(x: frameGuide.minX, y: frameGuide.maxY - height, width: frameGuide.width, height: height)
             }
         }
@@ -97,7 +101,7 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
     private let tempConstantForLayoutScaling: CGFloat = 700.0
     
     fileprivate func addAndConstrainLSystemView() {
-        let lsystemView = LSystemView(frame: view.frame, config: config, pathView: pathView)
+        let lsystemView = LSystemView(frame: view.frame, config: config, pathView: pathView, onFinishedDrawing: onFinishedDrawing)
         view.addSubview(lsystemView)
         
         lsystemView.translatesAutoresizingMaskIntoConstraints = false

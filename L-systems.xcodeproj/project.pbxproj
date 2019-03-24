@@ -21,6 +21,7 @@
 		F44C030D223D4E52001A20C4 /* Utils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44C030C223D4E52001A20C4 /* Utils.swift */; };
 		F45D8DA8223FA5E000DB12DB /* LSystemConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45D8DA7223FA5E000DB12DB /* LSystemConfiguration.swift */; };
 		F45D8DAA223FDDB700DB12DB /* ColorStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45D8DA9223FDDB700DB12DB /* ColorStackView.swift */; };
+		F4B7C8092247B03000E33D6C /* LsystemsIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = F4B7C8082247B03000E33D6C /* LsystemsIcon.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -91,7 +92,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		5E086DC02051C5A7004D8D25 /* L-Systems.playgroundbook */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "L-Systems.playgroundbook"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E086DC02051C5A7004D8D25 /* L-systems.playgroundbook */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "L-systems.playgroundbook"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E086DC72051DD03004D8D25 /* BookOverridingBuildSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = BookOverridingBuildSettings.xcconfig; sourceTree = "<group>"; };
 		5E086DCF2051DF0F004D8D25 /* Manifest.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Manifest.plist; sourceTree = "<group>"; };
 		5E0E37522065981C008FA4BE /* BuildSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = BuildSettings.xcconfig; sourceTree = "<group>"; };
@@ -113,6 +114,7 @@
 		F44C030C223D4E52001A20C4 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
 		F45D8DA7223FA5E000DB12DB /* LSystemConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSystemConfiguration.swift; sourceTree = "<group>"; };
 		F45D8DA9223FDDB700DB12DB /* ColorStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorStackView.swift; sourceTree = "<group>"; };
+		F4B7C8082247B03000E33D6C /* LsystemsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LsystemsIcon.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -137,7 +139,7 @@
 		5E086DA4204F706E004D8D25 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5E086DC02051C5A7004D8D25 /* L-Systems.playgroundbook */,
+				5E086DC02051C5A7004D8D25 /* L-systems.playgroundbook */,
 				5EF2F9AB2054BBF300191409 /* libBook_Sources.a */,
 				5EA2E3BD2056F35A00416A35 /* LiveViewTestApp.app */,
 			);
@@ -243,6 +245,7 @@
 		5EF2F9792054B64800191409 /* PrivateResources */ = {
 			isa = PBXGroup;
 			children = (
+				F4B7C8082247B03000E33D6C /* LsystemsIcon.png */,
 			);
 			path = PrivateResources;
 			sourceTree = "<group>";
@@ -286,7 +289,7 @@
 			);
 			name = PlaygroundBook;
 			productName = PlaygroundBook;
-			productReference = 5E086DC02051C5A7004D8D25 /* L-Systems.playgroundbook */;
+			productReference = 5E086DC02051C5A7004D8D25 /* L-systems.playgroundbook */;
 			productType = "com.apple.product-type.bundle";
 		};
 		5EA2E3BC2056F35A00416A35 /* LiveViewTestApp */ = {
@@ -348,7 +351,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 5E2A7AE0204F611300F4E17A /* Build configuration list for PBXProject "PlaygroundBook" */;
+			buildConfigurationList = 5E2A7AE0204F611300F4E17A /* Build configuration list for PBXProject "L-systems" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -373,6 +376,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4B7C8092247B03000E33D6C /* LsystemsIcon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -716,7 +720,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5E2A7AE0204F611300F4E17A /* Build configuration list for PBXProject "PlaygroundBook" */ = {
+		5E2A7AE0204F611300F4E17A /* Build configuration list for PBXProject "L-systems" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5E2A7AE1204F611300F4E17A /* Debug */,

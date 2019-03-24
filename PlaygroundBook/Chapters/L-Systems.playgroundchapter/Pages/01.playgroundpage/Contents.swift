@@ -9,8 +9,13 @@ func drawPath(_ path: String) {
         "R": Action.rotateRight,
         "L": Action.rotateLeft
     ]
-    let config = LSystemConfiguration(axiom: path, rules: rules, iterations: 0, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor(displayP3Red: 76.0 / 255.0, green: 217.0 / 255.0, blue: 100.0 / 255.0, alpha: 1.0).cgColor, drawMode: .turtle, speed: 10.0)
-    let lViewController = LSystemViewController(config: config, userInteractionEnabled: true)
+    let onFinishedDrawing = DispatchWorkItem {
+        if path.starts(with: "RFLFLFRFRF") {
+            PlaygroundPage.current.assessmentStatus = .pass(message: "Lookin' great! Head to the [next page](@next) to explore what can be done with these letters!")
+        }
+    }
+    let config = LSystemConfiguration(axiom: path, rules: rules, iterations: 0, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor(displayP3Red: 76.0 / 255.0, green: 217.0 / 255.0, blue: 100.0 / 255.0, alpha: 1.0).cgColor, drawMode: .turtle, speed: 1.0)
+    let lViewController = LSystemViewController(config: config, userInteractionEnabled: true, onFinishedDrawing: onFinishedDrawing)
     PlaygroundPage.current.liveView = lViewController
 }
 
@@ -29,12 +34,5 @@ func drawPath(_ path: String) {
  * callout(Tip):
  You can always zoom and drag the path to explore it in further detail.
  */
-
 let path = /*#-editable-code*/"RFLFLFRF"/*#-end-editable-code*/
 drawPath(path)
-
-//#-hidden-code
-if path.starts(with: "RFLFLFRFRF") {
-    PlaygroundPage.current.assessmentStatus = .pass(message: "Lookin' great! Head to the [next page](@next) to explore what can be done with these letters!")
-}
-//#-end-hidden-code
