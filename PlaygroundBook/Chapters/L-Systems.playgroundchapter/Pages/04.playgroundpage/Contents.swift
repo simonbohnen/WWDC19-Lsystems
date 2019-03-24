@@ -8,7 +8,7 @@ func drawLsystem(_ axiom: String, _ rules: [Character: String], _ iterations: In
          PlaygroundPage.current.assessmentStatus = .pass(message: "Lookin' great! Head to the [next page](@next) to explore what can be done with these letters!")
          }*/
     }
-    let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actions, angle: CGFloat(angle), strokeColor: UIColor.green.cgColor, drawMode: drawMode, speed: speed)
+    let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actions, angle: CGFloat(angle), strokeColor: UIColor(displayP3Red: 76.0 / 255.0, green: 217.0 / 255.0, blue: 100.0 / 255.0, alpha: 1.0).cgColor, drawMode: drawMode, speed: speed)
     let lViewController = LSystemViewController(config: config, userInteractionEnabled: true, onFinishedDrawing: onFinishedDrawing)
     PlaygroundPage.current.liveView = lViewController
 }
