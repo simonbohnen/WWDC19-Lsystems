@@ -10,10 +10,10 @@ import UIKit
 import PlaygroundSupport
 
 public enum DrawMode {
-    case morph, turtle, draw, display
+    case morph, turtle, draw, display, page2mode
 }
 
-public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveViewSafeAreaContainer {
+public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
     var paths: [CGPath]?
     //The sequences this LSystemView will display. These are generated using increasingly many interations.
     var sequences: [[Action]]?
@@ -24,8 +24,12 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
     //Indicates whether the drawn path is too large, is used to display error to user
     var pathTooLarge: Bool = false
     
-    public init(frame: CGRect, config: LSystemConfiguration) {
+    var pathView: UILabel?
+    var words: [String]?
+    
+    public init(frame: CGRect, config: LSystemConfiguration, pathView: UILabel?) {
         self.config = config
+        self.pathView = pathView
         super.init(frame: frame)
         generateSequences()
     }
@@ -51,14 +55,9 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
             generatePaths()
             
             if let paths = paths {
-                mainLayer.path = paths.last!
-                mainLayer.strokeColor = config.strokeColor
-                let step = getStartAndStep(sequence: sequences!.last!).1
-                mainLayer.lineWidth = 0.5 //step / 20.0
-                mainLayer.fillColor = nil
-                
                 switch(config.drawMode) {
                 case .morph:
+                    configureMainLayer()
                     let animation = CAKeyframeAnimation(keyPath: "path")
                     var pathsDuplicated: [CGPath] = []
                     for path in paths {
@@ -66,72 +65,110 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
                         pathsDuplicated.append(path)
                     }
                     animation.values = pathsDuplicated
-                    animation.duration = Double(paths.count) / 1.0
-                    
-                    //animation.fillMode = CAMediaTimingFillMode.forwards
-                    animation.isRemovedOnCompletion = false
+                    animation.duration = Double(paths.count) * 2.0 / config.speed
                     
                     mainLayer.add(animation, forKey: "drawPathAnimation")
                     layer.addSublayer(mainLayer)
+                    
                 case .draw:
+                    configureMainLayer()
                     let animation = CABasicAnimation(keyPath: "strokeEnd")
                     animation.fromValue = 0.0
                     animation.toValue = 1.0
-                    animation.duration = 5
+                    animation.duration = 5.0 / config.speed
+                    animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
                     mainLayer.add(animation, forKey: "drawPathAnimation")
                     layer.addSublayer(mainLayer)
+                    
                 case .display:
-                    //TODO: implement
-                    break
-                case .turtle:
-                    let drawingAnimation = CAKeyframeAnimation(keyPath: "strokeEnd")
-                    drawingAnimation.values = generateStrokeEndValues()
-                    drawingAnimation.duration = 10 //Double(sequences!.last!.count) / 10.0
-                    mainLayer.add(drawingAnimation, forKey: "drawingAnimation")
-                    
-                    let startAndStep = getStartAndStep(sequence: sequences!.last!)
-                    let start = startAndStep.0
-                    let step = startAndStep.1
-                    let transforms: [CATransform3D] = getTurtleTransforms(sequence: sequences!.last!, startingPoint: start, config: config, step: step)
-                    
-                    //Describing the turtle as an arrow
-                    let turtle = UIBezierPath()
-                    turtle.move(to: CGPoint(x: 0, y: -step / 3.0))
-                    turtle.addLine(to: CGPoint(x: step / 5.0, y: step / 5.0))
-                    turtle.addLine(to: CGPoint(x: 0, y: step / 10.0))
-                    turtle.addLine(to: CGPoint(x: -step / 5.0, y: step / 5.0))
-                    turtle.addLine(to: CGPoint(x: 0, y: -step / 3.0))
-                    
-                    let turtleLayer = CAShapeLayer()
-                    turtleLayer.path = turtle.cgPath
-                    turtleLayer.transform = transforms.last!
-                    turtleLayer.fillColor = UIColor.red.cgColor
-                    
-                    let turtleAnimaton = CAKeyframeAnimation(keyPath: "transform")
-                    turtleAnimaton.values = transforms
-                    turtleAnimaton.duration = 10 //Double(sequences!.last!.count) / 10.0
-                    turtleAnimaton.isRemovedOnCompletion = false
-                    turtleLayer.add(turtleAnimaton, forKey: "turtleAnimation")
-                    
+                    configureMainLayer()
                     layer.addSublayer(mainLayer)
-                    layer.insertSublayer(turtleLayer, above: mainLayer)
+                    
+                case .turtle:
+                    addTurtleAnimation(iteration: words!.count - 1) //sequences!.count - 1
+                    
+                case .page2mode:
+                    let delay = 3.0
+                    addTurtleAnimation(iteration: 0)
+                    
+                    for i in 1...config.iterations {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + (duration + delay) * Double(i), execute: {
+                            self.layer.sublayers?.forEach { $0.removeFromSuperlayer() }
+                            self.addTurtleAnimation(iteration: i)
+                        })
+                    }
                 }
             }
         }
     }
     
-    func generateStrokeEndValues() -> [CGFloat] {
+    let duration = 2.0
+    
+    func addTurtleAnimation(iteration: Int) {
+        if let pathView = pathView {
+            pathView.text = words![iteration]
+        }
+        
+        let startAndStep = self.getStartAndStep(sequence: self.sequences![iteration])
+        let start = startAndStep.0
+        let step = startAndStep.1
+        
+        let newPathLayer = CAShapeLayer()
+        let newTurtleLayer = CAShapeLayer()
+        
+        newPathLayer.path = self.paths![iteration]
+        newPathLayer.strokeColor = self.config.strokeColor
+        newPathLayer.lineWidth = max(0.5, step / 20.0)
+        newPathLayer.fillColor = nil
+        
+        let drawingAnimation = CAKeyframeAnimation(keyPath: "strokeEnd")
+        drawingAnimation.values = self.generateStrokeEndValues(iteration: iteration)
+        drawingAnimation.duration = self.duration // config.speed //Double(sequences!.last!.count) / 10.0
+        newPathLayer.add(drawingAnimation, forKey: "drawingAnimation")
+        
+        let transforms: [CATransform3D] = getTurtleTransforms(sequence: self.sequences![iteration], startingPoint: start, config: self.config, step: step)
+        
+        //Describing the turtle as an arrow
+        let turtle = UIBezierPath()
+        turtle.move(to: CGPoint(x: 0, y: -step / 3.0))
+        turtle.addLine(to: CGPoint(x: step / 5.0, y: step / 5.0))
+        turtle.addLine(to: CGPoint(x: 0, y: step / 10.0))
+        turtle.addLine(to: CGPoint(x: -step / 5.0, y: step / 5.0))
+        turtle.addLine(to: CGPoint(x: 0, y: -step / 3.0))
+        
+        newTurtleLayer.path = turtle.cgPath
+        newTurtleLayer.transform = transforms.last!
+        newTurtleLayer.fillColor = UIColor.red.cgColor
+        
+        let turtleAnimation = CAKeyframeAnimation(keyPath: "transform")
+        turtleAnimation.values = transforms
+        turtleAnimation.duration = self.duration //Double(sequences!.last!.count) / 10.0
+        newTurtleLayer.add(turtleAnimation, forKey: "turtleAnimation")
+        
+        self.layer.addSublayer(newPathLayer)
+        self.layer.insertSublayer(newTurtleLayer, above: newPathLayer)
+    }
+    
+    func configureMainLayer() {
+        mainLayer.path = paths!.last!
+        mainLayer.strokeColor = config.strokeColor
+        let step = getStartAndStep(sequence: sequences!.last!).1
+        mainLayer.lineWidth = max(0.5, step / 20.0)
+        mainLayer.fillColor = nil
+    }
+    
+    func generateStrokeEndValues(iteration: Int) -> [CGFloat] {
         var forwardCount: CGFloat = 0
-        for action in sequences!.last! {
+        for action in sequences![iteration] {
             if action == .forward {
                 forwardCount += 1
             }
         }
         
         let step: CGFloat = 1.0 / forwardCount
-        var strokeEndValues: [CGFloat] = []
+        var strokeEndValues: [CGFloat] = [0.0]
         var strokeEnd: CGFloat = 0
-        for action in sequences!.last! {
+        for action in sequences![iteration] {
             if action == .forward {
                 strokeEnd += step
             }
@@ -169,12 +206,14 @@ public class LSystemView: UIView, UIGestureRecognizerDelegate, PlaygroundLiveVie
     func generateSequences() {
         //Generating the sequences for any number of iterations to allow morphing
         var sequences: [[Action]] = []
+        words = []
         for i in 0...config.iterations {
             let finishedSequence = replace(iterations: i, axiom: config.axiom, rules: config.rules)
             if finishedSequence == nil {
                 pathTooLarge = true
                 return
             }
+            words?.append(finishedSequence!)
             sequences.append(stringToSequence(string: finishedSequence!, actionMap: config.actionMap))
         }
         

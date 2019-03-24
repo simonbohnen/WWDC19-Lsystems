@@ -48,8 +48,8 @@ public func replace(iterations: Int, axiom: String, rules: [Character: String]) 
 }
 
 public func getTurtleTransforms(sequence: [Action], startingPoint: CGPoint, config: LSystemConfiguration, step: CGFloat) -> [CATransform3D] {
-    var transforms: [CATransform3D] = []
     var point = CGPoint(x: startingPoint.x, y: startingPoint.y)
+    var transforms: [CATransform3D] = [CATransform3DMakeTranslation(point.x, point.y, 0)]
     var direction = CGPoint(x: 0, y: -1)
     var cumulatedAngle: CGFloat = 0
     var posStack: [(CGPoint, CGPoint)] = []
@@ -68,7 +68,7 @@ public func getTurtleTransforms(sequence: [Action], startingPoint: CGPoint, conf
             posStack.append((point, direction))
             break
         case .pop:
-            let popped = posStack.popLast()! //TODO: Was machen wenns keine mehr gibt?
+            let popped = posStack.popLast()!
             point = popped.0
             direction = popped.1
             break
@@ -106,7 +106,7 @@ public func getPath(sequence: [Action], startingPoint: CGPoint, config: LSystemC
             posStack.append((point, direction))
             break
         case .pop:
-            let popped = posStack.popLast()! //TODO: Was machen wenns keine mehr gibt?
+            let popped = posStack.popLast()!
             point = popped.0
             newPath.move(to: popped.0)
             direction = popped.1
@@ -141,7 +141,7 @@ public func getBoxAndStartPoint(sequence: [Action], config: LSystemConfiguration
             posStack.append((point, direction))
             break
         case .pop:
-            let popped = posStack.popLast()! //TODO: Was machen wenns keine mehr gibt?
+            let popped = posStack.popLast()! //TODO: Was machen wenns keine mehr gibt? auch an zwei anderen stellen
             point = popped.0
             direction = popped.1
             break

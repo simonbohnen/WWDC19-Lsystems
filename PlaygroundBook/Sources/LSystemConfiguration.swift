@@ -16,8 +16,9 @@ public class LSystemConfiguration {
     public var angle: CGFloat
     public var strokeColor: CGColor
     public var drawMode: DrawMode
+    public var speed: Double
     
-    public init(axiom: String, rules: [Character: String], iterations: Int, actionMap: [Character: Action], angle: CGFloat, strokeColor: CGColor, drawMode: DrawMode) {
+    public init(axiom: String, rules: [Character: String], iterations: Int, actionMap: [Character: Action], angle: CGFloat, strokeColor: CGColor, drawMode: DrawMode, speed: Double) {
         self.axiom = axiom
         self.rules = rules
         self.iterations = iterations
@@ -25,5 +26,6 @@ public class LSystemConfiguration {
         self.angle = angle
         self.strokeColor = strokeColor
         self.drawMode = drawMode
+        self.speed = speed
     }
 }

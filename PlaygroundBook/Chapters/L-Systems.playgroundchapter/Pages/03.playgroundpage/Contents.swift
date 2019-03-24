@@ -1,8 +1,10 @@
 //#-hidden-code
+//Angle modification using Kpch snowflake
+
 import UIKit
 import PlaygroundSupport
 
-func drawPath(_ axiom: String, _ rules: [Character: String], _ iterations: Int) {
+func drawLsystem(_ axiom: String, _ rules: [Character: String], _ iterations: Int, _ angle: CGFloat) {
     let actionMap : [Character : Action] = [
         "F": Action.forward,
         "R": Action.rotateRight,
@@ -15,18 +17,17 @@ func drawPath(_ axiom: String, _ rules: [Character: String], _ iterations: Int) 
 
 //#-end-hidden-code
 /*:
- 
+ So far we've always turned by an angle of 90 degrees. We'll change that now by defining a new variable which sets our angle. We'll use radians as a unit of angle.
  */
 
-let axiom = /*#-editable-code*/"F"/*#-end-editable-code*/
-let rules: [Character: String] [
-    "F": "RFF"
+let axiom = /*#-editable-code enter axiom*/""/*#-end-editable-code*/
+let rules: [Character: String] = [
+    "F": /*#-editable-code enter replacement*/""/*#-end-editable-code*/
 ]
 let iterations = 4
-drawLsystem(axiom, rules, iterations)
+let angle = /*#-editable-code 60° in radians*//*#-end-editable-code*/
+drawLsystem(axiom, rules, iterations, angle)
 
 //#-hidden-code
-if path.starts(with: "RFLFLFRFRF") {
-    PlaygroundPage.current.assessmentStatus = .pass(message: "Lookin' great! Head to the [next page](@next) to explore what can be done with these letters!")
-}
+
 //#-end-hidden-code

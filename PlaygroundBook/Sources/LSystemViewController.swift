@@ -10,7 +10,8 @@ import UIKit
 import PlaygroundSupport
 
 public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeAreaContainer {
-    public var lsystemView : LSystemView?
+    public var lsystemView: LSystemView?
+    public var pathView: UILabel?
     var config: LSystemConfiguration
     var userInteractionEnabled: Bool
     
@@ -34,8 +35,15 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        addAndConstrainImageView()
+        if config.drawMode == .page2mode {
+            pathView = UILabel()
+            pathView!.textAlignment = NSTextAlignment.center
+            pathView!.textColor = UIColor.white
+        }
+        
+        addAndConstrainLSystemView()
         view.backgroundColor = UIColor.black
+        self.view.addSubview(pathView!)
         
         if userInteractionEnabled {
             let pinchGesture = UIPinchGestureRecognizer(target: self,
@@ -67,19 +75,29 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
                 scale = (liveViewSafeAreaGuide.layoutFrame.height - padding) / (lsystemView?.frame.height)!
             }
             
+            if config.drawMode == .page2mode {
+                scale /= 1.5
+            }
+            
             // Increment the scale
             lsystemViewCumulativeScale *= scale
             
             // Execute the transform
             lsystemView?.transform = (lsystemView?.transform.scaledBy(x: scale, y: scale))!
+            
+            //Position pathView
+            let frameGuide = liveViewSafeAreaGuide.layoutFrame
+            let height: CGFloat = 50
+            if config.drawMode == .page2mode {
+                pathView!.frame = CGRect(x: frameGuide.minX, y: frameGuide.maxY - height, width: frameGuide.width, height: height)
+            }
         }
     }
     
     private let tempConstantForLayoutScaling: CGFloat = 700.0
-    var widthConstraint, heightConstraint, centerYConstraint, centerXConstraint : NSLayoutConstraint?
     
-    fileprivate func addAndConstrainImageView() {
-        let lsystemView = LSystemView(frame: view.frame, config: config)
+    fileprivate func addAndConstrainLSystemView() {
+        let lsystemView = LSystemView(frame: view.frame, config: config, pathView: pathView)
         view.addSubview(lsystemView)
         
         lsystemView.translatesAutoresizingMaskIntoConstraints = false
@@ -87,30 +105,22 @@ public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeArea
         lsystemViewCumulativeScale = 1.0
         
         // Set initial constraint values—from here we will only scale up or down
-        widthConstraint = lsystemView.widthAnchor.constraint(equalToConstant: tempConstantForLayoutScaling)
-        heightConstraint = lsystemView.heightAnchor.constraint(equalToConstant: tempConstantForLayoutScaling)
+        let widthConstraint = lsystemView.widthAnchor.constraint(equalToConstant: tempConstantForLayoutScaling)
+        let heightConstraint = lsystemView.heightAnchor.constraint(equalToConstant: tempConstantForLayoutScaling)
         
-        centerYConstraint = lsystemView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        centerXConstraint = lsystemView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        NSLayoutConstraint.activate([widthConstraint!,
-                                     heightConstraint!,
-                                     centerYConstraint!,
-                                     centerXConstraint!])
+        let centerYConstraint = lsystemView.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        let centerXConstraint = lsystemView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        NSLayoutConstraint.activate([widthConstraint,
+                                     heightConstraint,
+                                     centerYConstraint,
+                                     centerXConstraint])
         self.lsystemView = lsystemView
     }
-    
-    //TODO: welche zoomvariante nimmt man?
-    var focusPoint: CGPoint?
     
     @objc func zoom(gestureRecognizer: UIPinchGestureRecognizer) {
         guard let lsystemView = lsystemView else { return }
         
-        if gestureRecognizer.state == .began {
-            focusPoint = gestureRecognizer.location(in: view)
-        }
-        
         if gestureRecognizer.state == .changed || gestureRecognizer.state == .ended {
-            
             // Ensure the cumulative scale is within the set range
             if lsystemViewCumulativeScale > minScaleLimit && lsystemViewCumulativeScale < maxScaleLimit {
                 // Increment the scale

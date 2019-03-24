@@ -9,7 +9,7 @@ func drawPath(_ path: String) {
         "R": Action.rotateRight,
         "L": Action.rotateLeft
     ]
-    let config = LSystemConfiguration(axiom: path, rules: rules, iterations: 0, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor.green.cgColor, drawMode: .turtle)
+    let config = LSystemConfiguration(axiom: path, rules: rules, iterations: 0, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor(displayP3Red: 76.0 / 255.0, green: 217.0 / 255.0, blue: 100.0 / 255.0, alpha: 1.0).cgColor, drawMode: .turtle, speed: 10.0)
     let lViewController = LSystemViewController(config: config, userInteractionEnabled: true)
     PlaygroundPage.current.liveView = lViewController
 }

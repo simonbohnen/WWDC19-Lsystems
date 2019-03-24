@@ -22,7 +22,7 @@ let actionMap : [Character : Action] = [
     "]": Action.pop
 ]
 
-let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor.green.cgColor, drawMode: .morph)
+let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 2), strokeColor: UIColor.green.cgColor, drawMode: .morph, speed: 10.0)
 let lViewController = LSystemViewController(config: config, userInteractionEnabled: true)
 PlaygroundPage.current.liveView = lViewController
 //lViewController.lsystemView.draw(CGRect(x: 0,y:0, width: 0, height:0))

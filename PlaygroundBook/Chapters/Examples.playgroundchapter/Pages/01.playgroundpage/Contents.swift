@@ -42,7 +42,7 @@ let actionMap: [Character: Action] = [
     "R": Action.rotateRight
 ]
 
-let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 4), strokeColor: UIColor.green.cgColor, drawMode: .morph)
+let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actionMap, angle: CGFloat(Double.pi / 4), strokeColor: UIColor.green.cgColor, drawMode: .morph, speed: 1.0)
 let lViewController = LSystemViewController(config: config, userInteractionEnabled: true)
 PlaygroundPage.current.liveView = lViewController
 
