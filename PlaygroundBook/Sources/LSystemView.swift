@@ -10,7 +10,7 @@ import UIKit
 import PlaygroundSupport
 
 public enum DrawMode {
-    case morphing, turtle, draw, display, showEveryIteration
+    case morphBetweenIterations, turtle, draw, display, showEveryIteration
 }
 
 public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
@@ -47,7 +47,7 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
             let errorLayer = LCTextLayer()
             errorLayer.frame = bounds
             errorLayer.alignmentMode = .center
-            errorLayer.string = "The L-System you've generated is too large. Please try decreasing the number of iterations or shortening the replacement rules and try again."
+            errorLayer.string = "The L-system you've generated is too large. Please try decreasing the number of iterations or shortening the replacement rules and try again."
             errorLayer.font = CTFontCreateWithName("Helvetica" as CFString, 20.0, nil)
             
             errorLayer.foregroundColor = UIColor.white.cgColor
@@ -55,12 +55,13 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
             errorLayer.alignmentMode = CATextLayerAlignmentMode.left
             errorLayer.contentsScale = UIScreen.main.scale
             layer.addSublayer(errorLayer)
+            DispatchQueue.main.asyncAfter(deadline: .now(), execute: onFinishedDrawing)
         } else {
             generatePaths()
             
             if let paths = paths {
                 switch(config.drawMode) {
-                case .morphing:
+                case .morphBetweenIterations:
                     configureMainLayer()
                     let animation = CAKeyframeAnimation(keyPath: "path")
                     var pathsDuplicated: [CGPath] = []
@@ -74,7 +75,7 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
                     
                     mainLayer.add(animation, forKey: "drawPathAnimation")
                     layer.addSublayer(mainLayer)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + duration, execute: onFinishedDrawing)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + duration - 0.5, execute: onFinishedDrawing)
                     
                 case .draw:
                     configureMainLayer()
@@ -115,10 +116,14 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
     
     func getDuration(iteration: Int, withDelay: Bool) -> Double {
         var duration = Double(words![iteration].count)
-        if withDelay {
-            duration += 3.0
+        duration /= config.speed
+        if duration < 1.5 {
+            duration = 1.5
         }
-        return duration / config.speed
+        if withDelay {
+            duration += 1.5
+        }
+        return duration
     }
     
     func addTurtleAnimation(iteration: Int, duration: Double) {
@@ -155,7 +160,7 @@ public class LSystemView: UIView, PlaygroundLiveViewSafeAreaContainer {
         
         newTurtleLayer.path = turtle.cgPath
         newTurtleLayer.transform = transforms.last!
-        newTurtleLayer.fillColor = UIColor.red.cgColor
+        newTurtleLayer.fillColor = UIColor(displayP3Red: 255.0 / 255.0, green: 59.0 / 255.0, blue: 48.0 / 255.0, alpha: 1.0).cgColor
         
         let turtleAnimation = CAKeyframeAnimation(keyPath: "transform")
         turtleAnimation.values = transforms

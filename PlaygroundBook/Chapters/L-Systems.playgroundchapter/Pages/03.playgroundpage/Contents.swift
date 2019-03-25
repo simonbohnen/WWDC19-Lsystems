@@ -21,12 +21,14 @@ func drawLsystem(_ axiom: String, _ rules: [Character: String], _ iterations: In
 }
 //#-end-hidden-code
 /*:
- So far we've always turned by an angle of 90 degrees. We'll change that now by defining a new variable which sets our angle. As we'll use radians as a unit, here's a quick refresher on how radians relates to degrees.
+ So far we've always turned by an angle of 90°. We'll change that now by defining a new variable which sets our angle in radians.
+ 
+ Complete the following steps to see a beautiful Koch snowflake emerge.
  
  1. Set the axiom to `FRRFRRF`
- 2. Create a rule which replaces `F` with `FLFRRFLF`
+ 2. Let `F` be replaced with `FLFRRFLF`
  3. Set the angle to 60° in radians
- 4. Run your code to see a beautiful Koch snowflake emerge!
+ 4. Run your code!
  */
 let axiom = /*#-editable-code enter axiom*/""/*#-end-editable-code*/
 let rules: [Character: String] = [
@@ -34,6 +36,6 @@ let rules: [Character: String] = [
 ]
 let iterations = 4
 let angle = /*#-editable-code enter angle*/Double.pi / 2/*#-end-editable-code*/
-let drawMode = DrawMode.morphing
+let drawMode = DrawMode.morphBetweenIterations
 let speed = 1.0
 drawLsystem(axiom, rules, iterations, drawMode, speed, angle)

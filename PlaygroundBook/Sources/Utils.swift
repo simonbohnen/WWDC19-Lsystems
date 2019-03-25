@@ -10,7 +10,7 @@ import UIKit
 import PlaygroundSupport
 
 public enum Action {
-    case forward, rotateRight, rotateLeft, push, pop, sneakForward //TODO besserer name
+    case forward, rotateRight, rotateLeft, push, pop, sneakForward
 }
 
 public func stringToSequence(string: String, actionMap: [Character: Action]) -> [Action] {
@@ -141,7 +141,7 @@ public func getBoxAndStartPoint(sequence: [Action], config: LSystemConfiguration
             posStack.append((point, direction))
             break
         case .pop:
-            let popped = posStack.popLast()! //TODO: Was machen wenns keine mehr gibt? auch an zwei anderen stellen
+            let popped = posStack.popLast()!
             point = popped.0
             direction = popped.1
             break

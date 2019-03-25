@@ -21,7 +21,6 @@
 	<key>Chapters</key>
 	<array>
 		<string>L-systems.playgroundchapter</string>
-		<string>Examples.playgroundchapter</string>
 	</array>
 </dict>
 </plist>

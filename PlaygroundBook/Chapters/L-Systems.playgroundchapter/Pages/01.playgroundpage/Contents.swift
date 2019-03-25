@@ -21,14 +21,14 @@ func drawPath(_ path: String) {
 
 //#-end-hidden-code
 /*:
- What you just saw is called a dragon curve. A dragon curve is a special kind of **L-system**, which is the topic of this playground. To get started with L-systems, we'll have a look at how motion can be described using letters.
+ What you just saw is called a dragon curve. A dragon curve is a special kind of **L-system**, which is the topic of this playground. To get started with L-systems, we'll have a look at how two-dimensional motion can be described using letters.
  There's going to be an arrow which we can steer using the following letters:
- 1. "F" moves the arrow one step forward
- 2. "L" makes it turn left
- 3. "R" makes it turn right
+ 1. `F` moves the arrow one step forward
+ 2. `L` makes it turn left
+ 3. `R` makes it turn right
  
  Now go ahead and run the code below. You'll see the arrow perform the motions as described by the string.
- Try to extend the path so our arrow moves along an S-shape.
+ Try to add two letters to the path so our arrow moves along an S-shape.
  When you've finished experimenting and ask yourself how this could be interesting, head over to the [next page](@next).
  
  * callout(Tip):

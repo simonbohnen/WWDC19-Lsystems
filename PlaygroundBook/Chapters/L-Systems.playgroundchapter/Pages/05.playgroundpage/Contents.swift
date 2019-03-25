@@ -3,11 +3,7 @@ import UIKit
 import PlaygroundSupport
 
 func drawLsystem(_ axiom: String, _ rules: [Character: String], _ iterations: Int, _ drawMode: DrawMode, _ speed: Double, _ angle: Double, _ actions: [Character: Action], _ strokeColor: UIColor) {
-    let onFinishedDrawing = DispatchWorkItem {
-        /*if path.starts(with: "RFLFLFRFRF") {
-         PlaygroundPage.current.assessmentStatus = .pass(message: "Lookin' great! Head to the [next page](@next) to explore what can be done with these letters!")
-         }*/
-    }
+    let onFinishedDrawing = DispatchWorkItem { }
     let config = LSystemConfiguration(axiom: axiom, rules: rules, iterations: iterations, actionMap: actions, angle: CGFloat(angle), strokeColor: strokeColor.cgColor, drawMode: drawMode, speed: speed)
     let lViewController = LSystemViewController(config: config, userInteractionEnabled: true, onFinishedDrawing: onFinishedDrawing)
     PlaygroundPage.current.liveView = lViewController
@@ -15,7 +11,7 @@ func drawLsystem(_ axiom: String, _ rules: [Character: String], _ iterations: In
 
 //#-end-hidden-code
 /*:
- You've successfully learned the basics of L-systems! To round things up, here's the dragon curve you saw in the beginning written as an L-system. Use this page to experiment with all the options you had on the previous pages.
+ You've successfully mastered L-systems! To round things up, here's the dragon curve you saw in the beginning written as an L-system. Use this page to experiment with all the options you had on the previous pages.
  
  Thank you so much for trying out my playground, I hope to see you at WWDC19!
  */
@@ -28,9 +24,9 @@ let rules: [Character: String] = [
     //#-end-editable-code
 ]
 let angle = /*#-editable-code*/Double.pi / 2/*#-end-editable-code*/
-let iterations = /*#-editable-code*/6/*#-end-editable-code*/
-let drawMode = DrawMode/*#-editable-code*/.morphing/*#-end-editable-code*/
-let speed = /*#-editable-code*/1.0/*#-end-editable-code*/
+let iterations = /*#-editable-code*/12/*#-end-editable-code*/
+let drawMode = DrawMode/*#-editable-code*/.morphBetweenIterations/*#-end-editable-code*/
+let speed = /*#-editable-code*/2.0/*#-end-editable-code*/
 let actions : [Character : Action] = [
     //#-editable-code
     "F": Action.forward,
