@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Hints</key>
+	<array>
+		<dict>
+			<key>Content</key>
+			<string>Remember that `Double.pi` is 180 degrees. Try to figure out what 60 degrees are in radians from there.</string>
+		</dict>
+		<dict>
+			<key>Content</key>
+			<string>60 degrees can be represented by `Double.pi / 3`</string>
+			<key>SpoilerButtonTitle</key>
+			<string>Show spoiler</string>
+		</dict>
+	</array>
+</dict>
+</plist>

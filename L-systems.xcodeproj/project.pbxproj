@@ -108,6 +108,9 @@
 		5EF2F9A52054BBB200191409 /* Sources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Sources; sourceTree = "<group>"; };
 		5EF2F9AB2054BBF300191409 /* libBook_Sources.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBook_Sources.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF2F9B62054E6F900191409 /* Chapters */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Chapters; sourceTree = "<group>"; };
+		F417F1DC224ACEAB00C53E7C /* L-systems.playgroundbook */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = "L-systems.playgroundbook"; sourceTree = "<group>"; };
+		F417F1DE224ACEC500C53E7C /* Cutscene */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Cutscene; sourceTree = "<group>"; };
+		F417F1E0224ACEF900C53E7C /* Logo */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Logo; sourceTree = "<group>"; };
 		F44C0308223D3EBB001A20C4 /* LSystemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSystemViewController.swift; sourceTree = "<group>"; };
 		F44C030A223D3F56001A20C4 /* LSystemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSystemView.swift; sourceTree = "<group>"; };
 		F44C030C223D4E52001A20C4 /* Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils.swift; sourceTree = "<group>"; };
@@ -183,6 +186,9 @@
 		5E2A7ADC204F611300F4E17A = {
 			isa = PBXGroup;
 			children = (
+				F417F1E0224ACEF900C53E7C /* Logo */,
+				F417F1DE224ACEC500C53E7C /* Cutscene */,
+				F417F1DC224ACEAB00C53E7C /* L-systems.playgroundbook */,
 				5E0E37542065A065008FA4BE /* README.md */,
 				5E086DC12051C5A7004D8D25 /* PlaygroundBook */,
 				5EA2E3BE2056F35A00416A35 /* LiveViewTestApp */,
