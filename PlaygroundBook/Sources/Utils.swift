@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import PlaygroundSupport
+//import PlaygroundSupport
 
 public enum Action {
     case forward, rotateRight, rotateLeft, push, pop, sneakForward

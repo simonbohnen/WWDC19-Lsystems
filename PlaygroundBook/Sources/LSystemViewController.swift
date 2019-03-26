@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import PlaygroundSupport
+//import PlaygroundSupport
 
 public class LSystemViewController: UIViewController, PlaygroundLiveViewSafeAreaContainer {
     var lsystemView: LSystemView?
